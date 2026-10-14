@@ -43,7 +43,6 @@ jobs:
                   Add-MpPreference -ExclusionPath "$env:GITHUB_WORKSPACE"
                   Add-MpPreference -ExclusionPath "C:\npm\cache"
                   Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\npm-cache"
-                  npm config set msvs_version 2022
 
             - name: Install Linux build dependencies
               if: matrix.platform == 'linux'
@@ -87,6 +86,7 @@ jobs:
               env:
                   GIT_ASKPASS: echo
                   GIT_TERMINAL_PROMPT: "0"
+                  GYP_MSVS_VERSION: "2022"
 
             - name: Install Task
               uses: arduino/setup-task@v2

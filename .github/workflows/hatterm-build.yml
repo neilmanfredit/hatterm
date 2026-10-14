@@ -1,9 +1,10 @@
 # Copyright 2026 Neil Manfred
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build, package, and draft-release hatterm for Linux (amd64 + arm64) and macOS (x64 + ARM64).
+# Build, package, and draft-release hatterm for Linux (amd64 + arm64), macOS (x64 + ARM64), and Windows (x64).
 # Triggered on version tags (v*) and manually via workflow_dispatch.
 # Artifacts are uploaded to the workflow run and attached to a draft GitHub Release.
+# Windows builds are unsigned (no DigiCert signing); users may see a SmartScreen warning on first run.
 
 name: Build hatterm
 run-name: Build ${{ github.ref_name }}${{ github.event_name == 'workflow_dispatch' && ' — Manual' || '' }}
@@ -31,6 +32,8 @@ jobs:
                       runner: ubuntu-latest
                     - platform: linux
                       runner: ubuntu-24.04-arm
+                    - platform: windows
+                      runner: windows-latest
         runs-on: ${{ matrix.runner }}
         steps:
             - uses: actions/checkout@v4
@@ -50,6 +53,11 @@ jobs:
             - name: Install FPM (macOS)
               if: matrix.platform == 'darwin'
               run: sudo gem install fpm
+
+            - name: Install FPM (Windows)
+              if: matrix.platform == 'windows'
+              run: gem install fpm
+              shell: bash
 
             - uses: actions/setup-go@v5
               with:
@@ -91,6 +99,13 @@ jobs:
               env:
                   USE_SYSTEM_FPM: true
 
+            - name: Build (Windows)
+              if: matrix.platform == 'windows'
+              run: task package
+              env:
+                  USE_SYSTEM_FPM: true
+              shell: powershell
+
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
               with:
@@ -125,3 +140,5 @@ jobs:
                       make/*.pacman
                       make/*.AppImage
                       make/*.snap
+                      make/*.exe
+                      make/*.msi

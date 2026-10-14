@@ -50,6 +50,7 @@ Download the latest release from [Releases](https://github.com/neilmanfredit/hat
 | AppImage (x86\_64) | `hatterm-linux-x64-*.AppImage` |
 | macOS (Apple Silicon) | `hatterm-darwin-arm64-*.dmg` |
 | macOS (Intel) | `hatterm-darwin-x64-*.dmg` |
+| Windows (x64) | `hatterm-win32-x64-*.exe` (NSIS installer) |
 
 ### Arch Linux (pacman)
 
@@ -62,6 +63,10 @@ sudo pacman -U hatterm-linux-x64-*.pacman
 ```bash
 sudo dpkg -i hatterm-linux-x64-*.deb
 ```
+
+### Windows
+
+Run the `.exe` NSIS installer. Windows may show a SmartScreen warning on first launch because the build is unsigned — click **More info → Run anyway**. Once you've confirmed it's safe you won't see the warning again.
 
 ---
 
@@ -171,6 +176,7 @@ Installed paths:
 |----------|------|
 | Linux (deb/pacman) | `/opt/hatterm/resources/hatterm-counter/hatterm-counter` |
 | macOS | `/Applications/hatterm.app/Contents/Resources/hatterm-counter/hatterm-counter` |
+| Windows | `%LOCALAPPDATA%\Programs\hatterm\resources\hatterm-counter\hatterm-counter` |
 
 Python 3.10+ must be available on your `PATH` (it is on most systems by default).
 

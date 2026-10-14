@@ -1,1 +1,26 @@
 Copyright 2025, Command Line Inc.
+
+---
+
+Modifications
+
+hatterm is a modified version of Wave Terminal (https://github.com/wavetermdev/waveterm),
+originally developed by Command Line Inc. and contributors.
+
+Copyright 2026 Neil Manfred.
+
+Summary of modifications:
+- Rebranded user-facing names, window titles, app IDs, desktop entry, and package name
+  from "Wave Terminal" / "waveterm" to "hatterm".
+- Disabled telemetry by default; nulled out Wave cloud endpoints (api.waveterm.dev,
+  ping.waveterm.dev) so no data is sent to Command Line Inc. servers.
+- Disabled auto-update by default; update feed will point to hatterm's own releases.
+- Renamed remote agent home directory from ~/.waveterm to ~/.hatterm.
+- Renamed environment variables from WAVETERM_* to HATTERM_*.
+- Extended AI provider layer (see docs/architecture-notes.md for details).
+- Added drag-and-drop file copy between local host and remote sessions.
+- Integrated native generative AI usage counter.
+
+The name "Wave Terminal" and any associated trademarks remain the property of
+Command Line Inc. Use of the Wave name is limited to attribution as required by
+Apache 2.0 section 4(b); hatterm makes no claim to the Wave brand.

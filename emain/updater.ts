@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: rebranded update notification strings from Wave Terminal to hatterm.
 
 import { dialog, ipcMain, Notification } from "electron";
 import { autoUpdater } from "electron-updater";
@@ -93,8 +94,8 @@ export class Updater {
             // Display the update banner and create a system notification
             this.status = "ready";
             const updateNotification = new Notification({
-                title: "Wave Terminal",
-                body: "A new version of Wave Terminal is ready to install.",
+                title: "hatterm",
+                body: "A new version of hatterm is ready to install.",
             });
             updateNotification.on("click", () => {
                 fireAndForget(this.promptToInstallUpdate.bind(this));

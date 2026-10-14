@@ -151,7 +151,7 @@ func (impl *ServerImpl) RemoteStartJobCommand(ctx context.Context, data wshrpc.C
 
 	cmd := exec.Command(wshPath, "jobmanager", "--jobid", data.JobId, "--clientid", data.ClientId)
 	if data.PublicKeyBase64 != "" {
-		cmd.Env = append(os.Environ(), "WAVETERM_PUBLICKEY="+data.PublicKeyBase64)
+		cmd.Env = append(os.Environ(), "HATTERM_PUBLICKEY="+data.PublicKeyBase64)
 	}
 	cmd.ExtraFiles = []*os.File{readyPipeWrite}
 	stdin, err := cmd.StdinPipe()

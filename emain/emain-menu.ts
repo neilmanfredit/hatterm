@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: rebranded user-facing strings from Wave Terminal to hatterm.
 
 import { waveEventSubscribeSingle } from "@/app/store/wps";
 import { RpcApi } from "@/app/store/wshclientapi";
@@ -174,7 +175,7 @@ function makeFileMenu(
 function makeAppMenuItems(webContents: electron.WebContents): Electron.MenuItemConstructorOptions[] {
     const appMenuItems: Electron.MenuItemConstructorOptions[] = [
         {
-            label: "About Wave Terminal",
+            label: "About hatterm",
             click: (_, window) => {
                 (getWindowWebContents(window) ?? webContents)?.send("menu-item-about");
             },

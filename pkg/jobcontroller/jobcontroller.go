@@ -692,7 +692,7 @@ func StartJob(ctx context.Context, params StartJobParams) (string, error) {
 	clientId := wstore.GetClientId()
 	publicKey := wavejwt.GetPublicKey()
 	publicKeyBase64 := base64.StdEncoding.EncodeToString(publicKey)
-	jobEnv := envutil.CopyAndAddToEnvMap(params.Env, "WAVETERM_JOBID", jobId)
+	jobEnv := envutil.CopyAndAddToEnvMap(params.Env, "HATTERM_JOBID", jobId)
 	startJobData := wshrpc.CommandRemoteStartJobData{
 		Cmd:                params.Cmd,
 		Args:               params.Args,

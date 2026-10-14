@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: endpoints set to empty strings to disable Wave cloud telemetry/ping.
 
 package wcloud
 
@@ -23,9 +24,9 @@ import (
 	"github.com/wavetermdev/waveterm/pkg/wavebase"
 )
 
-const WCloudEndpoint = "https://api.waveterm.dev/central"
+const WCloudEndpoint = ""
 const WCloudEndpointVarName = "WCLOUD_ENDPOINT"
-const WCloudPingEndpoint = "https://ping.waveterm.dev/central"
+const WCloudPingEndpoint = ""
 const WCloudPingEndpointVarName = "WCLOUD_PING_ENDPOINT"
 
 var WCloudEndpoint_VarCache string

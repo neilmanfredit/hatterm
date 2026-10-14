@@ -13,10 +13,10 @@ interface ChatConfig {
 
 const chatConfigs: ChatConfig[] = [
     {
-        userPrompt: "Check out ~/waveterm and summarize the project — what it does and how it's organized.",
+        userPrompt: "Check out ~/hatterm and summarize the project — what it does and how it's organized.",
         toolName: "read_dir",
-        toolDescription: 'reading directory "~/waveterm"',
-        markdownResponse: `Here's a quick, file-structure–driven overview of this repo (Wave Terminal):
+        toolDescription: 'reading directory "~/hatterm"',
+        markdownResponse: `Here's a quick, file-structure–driven overview of this repo (hatterm):
 
 ## What it is
 - Electron + React front end with a Go backend ("wavesrv"). Provides a terminal with GUI widgets, previews, web, and AI. (README.md)
@@ -63,14 +63,14 @@ Want deeper triage? Run these and paste results:
 \`\`\`bash
 # 1) Scan recent logs for problems
 grep -Ei 'error|panic|fatal|websocket|1006|1011' \\
-  "$HOME/Library/Application Support/waveterm-dev/waveapp.log" | tail -n 200
+  "$HOME/Library/Application Support/hatterm-dev/hattermapp.log" | tail -n 200
 
 # 2) Inspect around the disconnect window
 awk '($0 ~ /2025-10-10 18:08:2[0-9]/){print}' \\
-  "$HOME/Library/Application Support/waveterm-dev/waveapp.log"
+  "$HOME/Library/Application Support/hatterm-dev/hattermapp.log"
 
 # 3) Live follow for recurring drops
-tail -f "$HOME/Library/Application Support/waveterm-dev/waveapp.log" \\
+tail -f "$HOME/Library/Application Support/hatterm-dev/hattermapp.log" \\
   | grep -Ei 'error|panic|fatal|websocket|close'
 \`\`\`
 

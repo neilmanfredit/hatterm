@@ -1,5 +1,6 @@
 // Copyright 2026, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: rebranded About dialog for hatterm; updated links and copyright attribution.
 
 import Logo from "@/app/asset/logo.svg";
 import { OnboardingGradientBg } from "@/app/onboarding/onboarding-common";
@@ -28,11 +29,11 @@ const AboutModalV = ({ versionString, updaterChannel, onClose }: AboutModalVProp
             <div className="flex flex-col gap-[26px] w-full relative z-10">
                 <div className="flex flex-col items-center justify-center gap-4 self-stretch w-full text-center">
                     <Logo />
-                    <div className="text-[25px]">Wave Terminal</div>
+                    <div className="text-[25px]">hatterm</div>
                     <div className="leading-5">
-                        Open-Source AI-Integrated Terminal
+                        hatterm — Open-Source AI-Native Terminal
                         <br />
-                        Built for Seamless Workflows
+                        Based on Wave Terminal
                     </div>
                 </div>
                 <div className="items-center gap-4 self-stretch w-full text-center">
@@ -42,7 +43,7 @@ const AboutModalV = ({ versionString, updaterChannel, onClose }: AboutModalVProp
                 </div>
                 <div className="grid grid-cols-2 gap-[10px] self-stretch w-full">
                     <a
-                        href="https://github.com/wavetermdev/waveterm?ref=about"
+                        href="https://github.com/neilmanfredit/hatterm"
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center justify-center px-4 py-2 rounded border border-border hover:bg-hoverbg transition-colors duration-200"
@@ -50,15 +51,15 @@ const AboutModalV = ({ versionString, updaterChannel, onClose }: AboutModalVProp
                         <i className="fa-brands fa-github mr-2"></i>GitHub
                     </a>
                     <a
-                        href="https://www.waveterm.dev/?ref=about"
+                        href="https://github.com/neilmanfredit/hatterm/releases"
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center justify-center px-4 py-2 rounded border border-border hover:bg-hoverbg transition-colors duration-200"
                     >
-                        <i className="fa-sharp fa-light fa-globe mr-2"></i>Website
+                        <i className="fa-sharp fa-light fa-globe mr-2"></i>Releases
                     </a>
                     <a
-                        href="https://github.com/wavetermdev/waveterm/blob/main/ACKNOWLEDGEMENTS.md"
+                        href="https://github.com/neilmanfredit/hatterm/blob/hatterm-main/ACKNOWLEDGEMENTS.md"
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center justify-center px-4 py-2 rounded border border-border hover:bg-hoverbg transition-colors duration-200"
@@ -66,16 +67,16 @@ const AboutModalV = ({ versionString, updaterChannel, onClose }: AboutModalVProp
                         <i className="fa-sharp fa-light fa-book mr-2"></i>Open Source
                     </a>
                     <a
-                        href="https://github.com/sponsors/wavetermdev"
+                        href="https://github.com/wavetermdev/waveterm"
                         target="_blank"
                         rel="noopener"
                         className="inline-flex items-center justify-center px-4 py-2 rounded border border-border hover:bg-hoverbg transition-colors duration-200"
                     >
-                        <i className="fa-sharp fa-light fa-heart mr-2"></i>Sponsor
+                        <i className="fa-brands fa-github mr-2"></i>Upstream Wave
                     </a>
                 </div>
                 <div className="items-center gap-4 self-stretch w-full text-center">
-                    &copy; {currentDate.getFullYear()} Command Line Inc.
+                    &copy; {currentDate.getFullYear()} Neil Manfred. Based on Wave Terminal &copy; Command Line Inc.
                 </div>
             </div>
         </Modal>

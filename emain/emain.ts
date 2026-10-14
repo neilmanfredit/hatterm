@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: rebranded user-facing strings from Wave Terminal to hatterm.
 
 import { RpcApi } from "@/app/store/wshclientapi";
 import * as electron from "electron";
@@ -70,7 +71,7 @@ electron.nativeTheme.themeSource = "dark";
 console.log = log;
 console.log(
     sprintf(
-        "waveterm-app starting, data_dir=%s, config_dir=%s electronpath=%s gopath=%s arch=%s/%s electron=%s",
+        "hatterm starting, data_dir=%s, config_dir=%s electronpath=%s gopath=%s arch=%s/%s electron=%s",
         waveDataDir,
         waveConfigDir,
         getElectronAppBasePath(),
@@ -81,7 +82,7 @@ console.log(
     )
 );
 if (isDev) {
-    console.log("waveterm-app WAVETERM_DEV set");
+    console.log("hatterm HATTERM_DEV set");
 }
 
 function handleWSEvent(evtMsg: WSEventType) {
@@ -272,14 +273,14 @@ electronApp.on("before-quit", (e) => {
         !getUserConfirmedQuit() &&
         (allWindows.length > 0 || allBuilders.length > 0) &&
         !getIsWaveSrvDead() &&
-        !process.env.WAVETERM_NOCONFIRMQUIT
+        !process.env.HATTERM_NOCONFIRMQUIT
     ) {
         e.preventDefault();
         const choice = electron.dialog.showMessageBoxSync(null, {
             type: "question",
             buttons: ["Cancel", "Quit"],
             title: "Confirm Quit",
-            message: "Are you sure you want to quit Wave Terminal?",
+            message: "Are you sure you want to quit hatterm?",
             defaultId: 0,
             cancelId: 0,
         });
@@ -381,7 +382,7 @@ async function appMain() {
     const startTs = Date.now();
     const instanceLock = electronApp.requestSingleInstanceLock();
     if (!instanceLock) {
-        console.log("waveterm-app could not get single-instance-lock, shutting down");
+        console.log("hatterm could not get single-instance-lock, shutting down");
         setUserConfirmedQuit(true);
         electronApp.quit();
         return;

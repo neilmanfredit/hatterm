@@ -68,7 +68,7 @@ const DiagnosticTick = 10 * time.Minute
 var shutdownOnce sync.Once
 
 func init() {
-	envFilePath := os.Getenv("WAVETERM_ENVFILE")
+	envFilePath := os.Getenv("HATTERM_ENVFILE")
 	if envFilePath != "" {
 		log.Printf("applying env file: %s\n", envFilePath)
 		_ = godotenv.Load(envFilePath)
@@ -137,8 +137,8 @@ func diagnosticLoop() {
 	defer func() {
 		panichandler.PanicHandler("diagnosticLoop", recover())
 	}()
-	if os.Getenv("WAVETERM_NOPING") != "" {
-		log.Printf("WAVETERM_NOPING set, disabling diagnostic ping\n")
+	if os.Getenv("HATTERM_NOPING") != "" {
+		log.Printf("HATTERM_NOPING set, disabling diagnostic ping\n")
 		return
 	}
 	var lastSentDate string
@@ -411,13 +411,13 @@ func grabAndRemoveEnvVars() error {
 	}
 
 	// Remove WAVETERM env vars that leak from prod => dev
-	os.Unsetenv("WAVETERM_CLIENTID")
-	os.Unsetenv("WAVETERM_WORKSPACEID")
-	os.Unsetenv("WAVETERM_TABID")
-	os.Unsetenv("WAVETERM_BLOCKID")
-	os.Unsetenv("WAVETERM_CONN")
-	os.Unsetenv("WAVETERM_JWT")
-	os.Unsetenv("WAVETERM_VERSION")
+	os.Unsetenv("HATTERM_CLIENTID")
+	os.Unsetenv("HATTERM_WORKSPACEID")
+	os.Unsetenv("HATTERM_TABID")
+	os.Unsetenv("HATTERM_BLOCKID")
+	os.Unsetenv("HATTERM_CONN")
+	os.Unsetenv("HATTERM_JWT")
+	os.Unsetenv("HATTERM_VERSION")
 
 	return nil
 }

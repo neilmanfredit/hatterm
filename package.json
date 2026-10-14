@@ -1,16 +1,16 @@
 {
-    "name": "waveterm",
+    "name": "hatterm",
     "author": {
-        "name": "Command Line Inc",
-        "email": "info@commandline.dev"
+        "name": "Neil Manfred",
+        "email": "neil.manfred@fredianshield.com"
     },
-    "productName": "Wave",
-    "description": "Open-Source AI-Native Terminal Built for Seamless Workflows",
+    "productName": "hatterm",
+    "description": "Open-Source AI-Native Terminal — hatterm fork of Wave Terminal",
     "license": "Apache-2.0",
     "version": "0.14.5",
-    "homepage": "https://waveterm.dev",
+    "homepage": "https://github.com/neilmanfredit/hatterm",
     "build": {
-        "appId": "dev.commandline.waveterm"
+        "appId": "com.neilmanfred.hatterm"
     },
     "private": true,
     "main": "./dist/main/index.js",

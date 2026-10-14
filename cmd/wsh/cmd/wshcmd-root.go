@@ -169,7 +169,7 @@ func setupRpcClient(serverImpl wshutil.ServerImpl, jwtToken string) error {
 		return fmt.Errorf("error authenticating: %v", err)
 	}
 	RpcClientRouteId = authRtn.RouteId
-	blockId := os.Getenv("WAVETERM_BLOCKID")
+	blockId := os.Getenv("HATTERM_BLOCKID")
 	if blockId != "" {
 		peerInfo := fmt.Sprintf("domain:block:%s", blockId)
 		wshclient.SetPeerInfoCommand(RpcClient, peerInfo, &wshrpc.RpcOpts{Route: wshutil.ControlRoute})
@@ -191,7 +191,7 @@ func resolveSimpleId(id string) (*waveobj.ORef, error) {
 		}
 		return &orefObj, nil
 	}
-	blockId := os.Getenv("WAVETERM_BLOCKID")
+	blockId := os.Getenv("HATTERM_BLOCKID")
 	if blockId == "" {
 		return nil, fmt.Errorf("no WAVETERM_BLOCKID env var set")
 	}
@@ -210,7 +210,7 @@ func resolveSimpleId(id string) (*waveobj.ORef, error) {
 }
 
 func getTabIdFromEnv() string {
-	return os.Getenv("WAVETERM_TABID")
+	return os.Getenv("HATTERM_TABID")
 }
 
 // this will send wsh activity to the client running on *your* local machine (it does not contact any wave cloud infrastructure)

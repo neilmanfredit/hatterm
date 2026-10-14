@@ -16,7 +16,7 @@ on:
     workflow_dispatch:
 
 env:
-    GO_VERSION: "1.27"
+    GO_VERSION: "1.25.6"
     NODE_VERSION: 22
     NODE_OPTIONS: --max-old-space-size=4096
 
@@ -46,8 +46,8 @@ jobs:
                       libarchive-tools libopenjp2-tools rpm squashfs-tools ruby-dev
                   sudo gem install fpm
 
-            - name: Install Zig (Linux)
-              if: matrix.platform == 'linux'
+            - name: Install Zig (Linux + Windows)
+              if: matrix.platform == 'linux' || matrix.platform == 'windows'
               uses: mlugg/setup-zig@v2
 
             - name: Install FPM (macOS)

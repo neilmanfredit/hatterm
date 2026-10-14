@@ -34,7 +34,7 @@ jobs:
                       runner: windows-latest
         runs-on: ${{ matrix.runner }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
 
             - name: Configure Windows for native module builds
               if: matrix.platform == 'windows'

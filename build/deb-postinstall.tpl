@@ -1,16 +1,16 @@
 #!/bin/bash
+# Modified by Neil Manfred, 2026: updated symlink targets from waveterm to hatterm.
 
 if type update-alternatives 2>/dev/null >&1; then
-    # Remove previous link if it doesn't use update-alternatives
-    if [ -L '/usr/bin/waveterm' -a -e '/usr/bin/waveterm' -a "`readlink '/usr/bin/waveterm'`" != '/etc/alternatives/waveterm' ]; then
-        rm -f '/usr/bin/waveterm'
+    if [ -L '/usr/bin/hatterm' -a -e '/usr/bin/hatterm' -a "`readlink '/usr/bin/hatterm'`" != '/etc/alternatives/hatterm' ]; then
+        rm -f '/usr/bin/hatterm'
     fi
-    update-alternatives --install '/usr/bin/waveterm' 'waveterm' '/opt/Wave/waveterm' 100 || ln -sf '/opt/Wave/waveterm' '/usr/bin/waveterm'
+    update-alternatives --install '/usr/bin/hatterm' 'hatterm' '/opt/hatterm/hatterm' 100 || ln -sf '/opt/hatterm/hatterm' '/usr/bin/hatterm'
 else
-    ln -sf '/opt/Wave/waveterm' '/usr/bin/waveterm'
+    ln -sf '/opt/hatterm/hatterm' '/usr/bin/hatterm'
 fi
 
-chmod 4755 '/opt/Wave/chrome-sandbox' || true
+chmod 4755 '/opt/hatterm/chrome-sandbox' || true
 
 if hash update-mime-database 2>/dev/null; then
     update-mime-database /usr/share/mime || true

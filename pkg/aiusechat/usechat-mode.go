@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: added endpoints and provider defaults for Anthropic direct, Mistral, xAI, DeepSeek, Cohere, Perplexity, Together AI, and local inference providers.
 
 package aiusechat
 
@@ -30,12 +31,38 @@ const (
 
 	AzureLegacyDefaultAPIVersion = "2025-04-01-preview"
 
+	// Cloud provider endpoints (hatterm additions)
+	AnthropicChatEndpoint   = "https://api.anthropic.com/v1/messages"
+	MistralChatEndpoint     = "https://api.mistral.ai/v1/chat/completions"
+	XAIChatEndpoint         = "https://api.x.ai/v1/chat/completions"
+	DeepSeekChatEndpoint    = "https://api.deepseek.com/v1/chat/completions"
+	CohereChatEndpoint      = "https://api.cohere.com/compatibility/v1/chat/completions"
+	PerplexityChatEndpoint  = "https://api.perplexity.ai/chat/completions"
+	TogetherChatEndpoint    = "https://api.together.xyz/v1/chat/completions"
+	// Local inference endpoints (hatterm additions)
+	OllamaDefaultEndpoint   = "http://localhost:11434/v1/chat/completions"
+	LMStudioDefaultEndpoint = "http://localhost:1234/v1/chat/completions"
+	LlamaCppDefaultEndpoint = "http://localhost:8080/v1/chat/completions"
+	VLLMDefaultEndpoint     = "http://localhost:8000/v1/chat/completions"
+	LocalAIDefaultEndpoint  = "http://localhost:8080/v1/chat/completions"
+	// Model discovery endpoints for local providers
+	OllamaModelsEndpoint   = "http://localhost:11434/api/tags"
+	OpenAIModelsEndpoint   = "/v1/models"
+
 	OpenAIAPITokenSecretName      = "OPENAI_KEY"
 	OpenRouterAPITokenSecretName  = "OPENROUTER_KEY"
 	NanoGPTAPITokenSecretName     = "NANOGPT_KEY"
 	GroqAPITokenSecretName        = "GROQ_KEY"
 	AzureOpenAIAPITokenSecretName = "AZURE_OPENAI_KEY"
 	GoogleAIAPITokenSecretName    = "GOOGLE_AI_KEY"
+	// New secret names (hatterm additions)
+	AnthropicAPITokenSecretName   = "ANTHROPIC_KEY"
+	MistralAPITokenSecretName     = "MISTRAL_KEY"
+	XAIAPITokenSecretName         = "XAI_KEY"
+	DeepSeekAPITokenSecretName    = "DEEPSEEK_KEY"
+	CohereAPITokenSecretName      = "COHERE_KEY"
+	PerplexityAPITokenSecretName  = "PERPLEXITY_KEY"
+	TogetherAPITokenSecretName    = "TOGETHER_KEY"
 )
 
 func resolveAIMode(requestedMode string, premium bool) (string, *wconfig.AIModeConfigType, error) {
@@ -171,6 +198,127 @@ func applyProviderDefaults(config *wconfig.AIModeConfigType) {
 		}
 		if len(config.Capabilities) == 0 {
 			config.Capabilities = []string{uctypes.AICapabilityTools, uctypes.AICapabilityImages, uctypes.AICapabilityPdfs}
+		}
+	}
+	if config.Provider == uctypes.AIProvider_Anthropic {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_AnthropicMessages
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = AnthropicChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = AnthropicAPITokenSecretName
+		}
+		if len(config.Capabilities) == 0 {
+			config.Capabilities = []string{uctypes.AICapabilityTools, uctypes.AICapabilityImages, uctypes.AICapabilityPdfs}
+		}
+	}
+	if config.Provider == uctypes.AIProvider_Mistral {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = MistralChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = MistralAPITokenSecretName
+		}
+	}
+	if config.Provider == uctypes.AIProvider_XAI {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = XAIChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = XAIAPITokenSecretName
+		}
+	}
+	if config.Provider == uctypes.AIProvider_DeepSeek {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = DeepSeekChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = DeepSeekAPITokenSecretName
+		}
+	}
+	if config.Provider == uctypes.AIProvider_Cohere {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = CohereChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = CohereAPITokenSecretName
+		}
+	}
+	if config.Provider == uctypes.AIProvider_Perplexity {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = PerplexityChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = PerplexityAPITokenSecretName
+		}
+	}
+	if config.Provider == uctypes.AIProvider_Together {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = TogetherChatEndpoint
+		}
+		if config.APITokenSecretName == "" {
+			config.APITokenSecretName = TogetherAPITokenSecretName
+		}
+	}
+	// Local inference providers — no API token required by default
+	if config.Provider == uctypes.AIProvider_Ollama {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = OllamaDefaultEndpoint
+		}
+	}
+	if config.Provider == uctypes.AIProvider_LMStudio {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = LMStudioDefaultEndpoint
+		}
+	}
+	if config.Provider == uctypes.AIProvider_LlamaCpp {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = LlamaCppDefaultEndpoint
+		}
+	}
+	if config.Provider == uctypes.AIProvider_VLLM {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = VLLMDefaultEndpoint
+		}
+	}
+	if config.Provider == uctypes.AIProvider_LocalAI {
+		if config.APIType == "" {
+			config.APIType = uctypes.APIType_OpenAIChat
+		}
+		if config.Endpoint == "" {
+			config.Endpoint = LocalAIDefaultEndpoint
 		}
 	}
 	if config.APIType == "" {

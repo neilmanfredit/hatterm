@@ -21,6 +21,7 @@ import clsx from "clsx";
 import debug from "debug";
 import * as jotai from "jotai";
 import * as React from "react";
+import { TermFileDrop } from "./term-filedrop";
 import { TermLinkTooltip } from "./term-tooltip";
 import { TermStickers } from "./termsticker";
 import { TermThemeUpdater } from "./termtheme";
@@ -384,6 +385,9 @@ const TerminalView = ({ blockId, model }: ViewComponentProps<TermViewModel>) => 
         [model]
     );
 
+    const termCwd = blockData?.meta?.["cmd:cwd"] ?? "";
+    const termConnection = blockData?.meta?.["connection"] ?? "";
+
     return (
         <div className={clsx("view-term", "term-mode-" + termMode)} ref={viewRef} onContextMenu={handleContextMenu}>
             {termBg && <div key="term-bg" className="absolute inset-0 z-0 pointer-events-none" style={termBg} />}
@@ -392,7 +396,9 @@ const TerminalView = ({ blockId, model }: ViewComponentProps<TermViewModel>) => 
             <TermStickers config={stickerConfig} />
             <TermToolbarVDomNode key="vdom-toolbar" blockId={blockId} model={model} />
             <TermVDomNode key="vdom" blockId={blockId} model={model} />
-            <div key="connect-elem" className="term-connectelem" ref={connectElemRef} />
+            <TermFileDrop blockId={blockId} connection={termConnection} cwd={termCwd}>
+                <div key="connect-elem" className="term-connectelem" ref={connectElemRef} />
+            </TermFileDrop>
             <NullErrorBoundary debugName="TermLinkTooltip">
                 <TermLinkTooltip termWrap={termWrapInst} />
             </NullErrorBoundary>

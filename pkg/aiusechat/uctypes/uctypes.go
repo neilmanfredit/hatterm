@@ -1,5 +1,6 @@
 // Copyright 2025, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0
+// Modified by Neil Manfred, 2026: added provider constants for Anthropic direct, Mistral, xAI, DeepSeek, Cohere, Perplexity, Together AI, and local providers.
 
 package uctypes
 
@@ -33,6 +34,20 @@ const (
 	AIProvider_Azure       = "azure"
 	AIProvider_AzureLegacy = "azure-legacy"
 	AIProvider_Custom      = "custom"
+	// New providers added by hatterm
+	AIProvider_Anthropic  = "anthropic"
+	AIProvider_Mistral    = "mistral"
+	AIProvider_XAI        = "xai"
+	AIProvider_DeepSeek   = "deepseek"
+	AIProvider_Cohere     = "cohere"
+	AIProvider_Perplexity = "perplexity"
+	AIProvider_Together   = "together"
+	// Local inference providers
+	AIProvider_Ollama   = "ollama"
+	AIProvider_LMStudio = "lmstudio"
+	AIProvider_LlamaCpp = "llamacpp"
+	AIProvider_VLLM     = "vllm"
+	AIProvider_LocalAI  = "localai"
 )
 
 type UseChatRequest struct {

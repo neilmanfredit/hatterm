@@ -16,5 +16,165 @@
         "ai:model": "gpt-5-mini",
         "ai:maxtokens": 4000,
         "ai:timeoutms": 60000
+    },
+    "ai@openai": {
+        "display:name": "OpenAI - gpt-4.1",
+        "display:order": 1,
+        "display:icon": "sparkles",
+        "ai:provider": "openai",
+        "ai:apitype": "openai-chat",
+        "ai:model": "gpt-4.1",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 60000
+    },
+    "ai@anthropic": {
+        "display:name": "Anthropic - claude-sonnet-4-5",
+        "display:order": 2,
+        "display:icon": "sparkles",
+        "ai:provider": "anthropic",
+        "ai:apitype": "anthropic-messages",
+        "ai:model": "claude-sonnet-4-5-20251022",
+        "ai:maxtokens": 16384,
+        "ai:timeoutms": 60000
+    },
+    "ai@anthropic-opus": {
+        "display:name": "Anthropic - claude-opus-4-8",
+        "display:order": 3,
+        "display:icon": "sparkles",
+        "ai:provider": "anthropic",
+        "ai:apitype": "anthropic-messages",
+        "ai:model": "claude-opus-4-8-20251101",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 120000
+    },
+    "ai@google-gemini": {
+        "display:name": "Google - gemini-2.5-pro",
+        "display:order": 4,
+        "display:icon": "sparkles",
+        "ai:provider": "google",
+        "ai:apitype": "google-gemini",
+        "ai:model": "gemini-2.5-pro",
+        "ai:maxtokens": 65536,
+        "ai:timeoutms": 120000
+    },
+    "ai@mistral": {
+        "display:name": "Mistral - mistral-large-latest",
+        "display:order": 5,
+        "display:icon": "sparkles",
+        "ai:provider": "mistral",
+        "ai:apitype": "openai-chat",
+        "ai:model": "mistral-large-latest",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 60000
+    },
+    "ai@xai": {
+        "display:name": "xAI - grok-3",
+        "display:order": 6,
+        "display:icon": "sparkles",
+        "ai:provider": "xai",
+        "ai:apitype": "openai-chat",
+        "ai:model": "grok-3",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 60000
+    },
+    "ai@deepseek": {
+        "display:name": "DeepSeek - deepseek-chat",
+        "display:order": 7,
+        "display:icon": "sparkles",
+        "ai:provider": "deepseek",
+        "ai:apitype": "openai-chat",
+        "ai:model": "deepseek-chat",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 60000
+    },
+    "ai@perplexity": {
+        "display:name": "Perplexity - sonar-pro",
+        "display:order": 8,
+        "display:icon": "sparkles",
+        "ai:provider": "perplexity",
+        "ai:apitype": "openai-chat",
+        "ai:model": "sonar-pro",
+        "ai:maxtokens": 16384,
+        "ai:timeoutms": 60000
+    },
+    "ai@together": {
+        "display:name": "Together AI - meta-llama/Llama-4-Scout-17B-16E-Instruct",
+        "display:order": 9,
+        "display:icon": "sparkles",
+        "ai:provider": "together",
+        "ai:apitype": "openai-chat",
+        "ai:model": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+        "ai:maxtokens": 16384,
+        "ai:timeoutms": 60000
+    },
+    "ai@groq": {
+        "display:name": "Groq - llama-4-scout-17b-16e-instruct",
+        "display:order": 10,
+        "display:icon": "bolt",
+        "ai:provider": "groq",
+        "ai:apitype": "openai-chat",
+        "ai:model": "llama-4-scout-17b-16e-instruct",
+        "ai:maxtokens": 16384,
+        "ai:timeoutms": 30000
+    },
+    "ai@openrouter": {
+        "display:name": "OpenRouter",
+        "display:order": 11,
+        "display:icon": "sparkles",
+        "ai:provider": "openrouter",
+        "ai:apitype": "openai-chat",
+        "ai:model": "openai/gpt-4.1",
+        "ai:maxtokens": 32768,
+        "ai:timeoutms": 60000
+    },
+    "ai@ollama": {
+        "display:name": "Ollama (local)",
+        "display:order": 20,
+        "display:icon": "microchip",
+        "ai:provider": "ollama",
+        "ai:apitype": "openai-chat",
+        "ai:model": "llama3.2",
+        "ai:maxtokens": 8192,
+        "ai:timeoutms": 120000
+    },
+    "ai@lmstudio": {
+        "display:name": "LM Studio (local)",
+        "display:order": 21,
+        "display:icon": "microchip",
+        "ai:provider": "lmstudio",
+        "ai:apitype": "openai-chat",
+        "ai:model": "local-model",
+        "ai:maxtokens": 8192,
+        "ai:timeoutms": 120000
+    },
+    "ai@llamacpp": {
+        "display:name": "llama.cpp (local)",
+        "display:order": 22,
+        "display:icon": "microchip",
+        "ai:provider": "llamacpp",
+        "ai:apitype": "openai-chat",
+        "ai:model": "local-model",
+        "ai:maxtokens": 4096,
+        "ai:timeoutms": 120000
+    },
+    "ai@vllm": {
+        "display:name": "vLLM (local)",
+        "display:order": 23,
+        "display:icon": "microchip",
+        "ai:provider": "vllm",
+        "ai:apitype": "openai-chat",
+        "ai:model": "local-model",
+        "ai:maxtokens": 8192,
+        "ai:timeoutms": 120000
+    },
+    "ai@localai": {
+        "display:name": "LocalAI (local)",
+        "display:order": 24,
+        "display:icon": "microchip",
+        "ai:provider": "localai",
+        "ai:apitype": "openai-chat",
+        "ai:model": "local-model",
+        "ai:maxtokens": 8192,
+        "ai:timeoutms": 120000
     }
 }

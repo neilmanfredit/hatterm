@@ -788,6 +788,12 @@ func RemoteTerminateJobManagerCommand(w *wshutil.WshRpc, data wshrpc.CommandRemo
 	return err
 }
 
+// command "remotetmuxlistsessions", wshserver.RemoteTmuxListSessionsCommand
+func RemoteTmuxListSessionsCommand(w *wshutil.WshRpc, opts *wshrpc.RpcOpts) ([]string, error) {
+	resp, err := sendRpcRequestCallHelper[[]string](w, "remotetmuxlistsessions", nil, opts)
+	return resp, err
+}
+
 // command "remotewritefile", wshserver.RemoteWriteFileCommand
 func RemoteWriteFileCommand(w *wshutil.WshRpc, data wshrpc.FileData, opts *wshrpc.RpcOpts) error {
 	_, err := sendRpcRequestCallHelper[any](w, "remotewritefile", data, opts)

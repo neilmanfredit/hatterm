@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Tooltip } from "@/app/element/tooltip";
+import { SshTmuxModal, SshTmuxModalMode } from "@/app/modals/sshtmux-modal";
 import { getTabBadgeAtom } from "@/app/store/badge";
 import { getTabModelByTabId } from "@/app/store/tab-model";
 import { makeORef } from "@/app/store/wos";
@@ -198,6 +199,9 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
     const [hoverResetVersion, setHoverResetVersion] = useState(0);
     const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
     const [isNewTabHovered, setIsNewTabHovered] = useState(false);
+    const [newTabDropdownOpen, setNewTabDropdownOpen] = useState(false);
+    const [sshTmuxModal, setSshTmuxModal] = useState<SshTmuxModalMode>(null);
+    const newTabBtnRef = useRef<HTMLButtonElement>(null);
     const dragSourceRef = useRef<string | null>(null);
     const didResetHoverForDragRef = useRef(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -419,18 +423,64 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
                     />
                 )}
             </div>
-            <button
-                type="button"
-                className="group relative flex h-9 w-full shrink-0 cursor-pointer items-center gap-1.5 pl-3 pr-3 text-xs text-secondary/60 transition-colors hover:text-primary select-none whitespace-nowrap"
-                onClick={() => env.electron.createTab()}
-                onMouseEnter={() => setIsNewTabHovered(true)}
-                onMouseLeave={() => setIsNewTabHovered(false)}
-                aria-label="New Tab"
-            >
-                <div className="pointer-events-none absolute inset-x-1 inset-y-[4px] rounded-sm bg-transparent transition-colors group-hover:bg-hover" />
-                <i className="fa fa-solid fa-plus" style={{ fontSize: "10px" }} />
-                <span>New Tab</span>
-            </button>
+            <div className="relative w-full shrink-0">
+                <button
+                    type="button"
+                    ref={newTabBtnRef}
+                    className="group relative flex h-9 w-full cursor-pointer items-center gap-1.5 pl-3 pr-3 text-xs text-secondary/60 transition-colors hover:text-primary select-none whitespace-nowrap"
+                    onClick={() => setNewTabDropdownOpen((v) => !v)}
+                    onMouseEnter={() => setIsNewTabHovered(true)}
+                    onMouseLeave={() => setIsNewTabHovered(false)}
+                    aria-label="New Tab"
+                >
+                    <div className="pointer-events-none absolute inset-x-1 inset-y-[4px] rounded-sm bg-transparent transition-colors group-hover:bg-hover" />
+                    <i className="fa fa-solid fa-plus" style={{ fontSize: "10px" }} />
+                    <span>New Tab</span>
+                    <i className="fa fa-chevron-right ml-auto mr-1 text-[8px] opacity-50" />
+                </button>
+
+                {newTabDropdownOpen && (
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setNewTabDropdownOpen(false)} />
+                        <div className="absolute bottom-0 left-full ml-1 z-50 bg-zinc-800 border border-zinc-600 rounded shadow-lg min-w-[180px]">
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    env.electron.createTab();
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-desktop w-4 text-center text-zinc-500" />
+                                <span>Local</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("ssh");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-network-wired w-4 text-center text-zinc-500" />
+                                <span>SSH</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("sshtmux");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <span>SSH + Tmux</span>
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {sshTmuxModal != null && (
+                <SshTmuxModal mode={sshTmuxModal} onClose={() => setSshTmuxModal(null)} />
+            )}
         </div>
     );
 }

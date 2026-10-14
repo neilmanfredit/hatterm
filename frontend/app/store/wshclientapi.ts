@@ -792,6 +792,12 @@ export class RpcApiType {
         return client.wshRpcCall("remoteterminatejobmanager", data, opts);
     }
 
+    // command "remotetmuxlistsessions" [call]
+    RemoteTmuxListSessionsCommand(client: WshClient, opts?: RpcOpts): Promise<string[]> {
+        if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "remotetmuxlistsessions", null, opts);
+        return client.wshRpcCall("remotetmuxlistsessions", null, opts);
+    }
+
     // command "remotewritefile" [call]
     RemoteWriteFileCommand(client: WshClient, data: FileData, opts?: RpcOpts): Promise<void> {
         if (this.mockClient) return this.mockClient.mockWshRpcCall(client, "remotewritefile", data, opts);

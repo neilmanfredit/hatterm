@@ -10,7 +10,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -92,6 +94,26 @@ func (*ServerImpl) RemoteGetInfoCommand(ctx context.Context) (wshrpc.RemoteInfo,
 
 func (*ServerImpl) RemoteInstallRcFilesCommand(ctx context.Context) error {
 	return wshutil.InstallRcFiles()
+}
+
+func (*ServerImpl) RemoteTmuxListSessionsCommand(ctx context.Context) ([]string, error) {
+	out, err := exec.CommandContext(ctx, "tmux", "list-sessions", "-F", "#{session_name}").Output()
+	if err != nil {
+		return []string{}, nil
+	}
+	raw := strings.TrimSpace(string(out))
+	if raw == "" {
+		return []string{}, nil
+	}
+	parts := strings.Split(raw, "\n")
+	var sessions []string
+	for _, s := range parts {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			sessions = append(sessions, s)
+		}
+	}
+	return sessions, nil
 }
 
 func (*ServerImpl) FetchSuggestionsCommand(ctx context.Context, data wshrpc.FetchSuggestionsData) (*wshrpc.FetchSuggestionsResponse, error) {

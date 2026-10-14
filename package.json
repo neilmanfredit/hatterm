@@ -137,11 +137,9 @@
     },
     "packageManager": "npm@10.9.2",
     "workspaces": [
-        "docs",
         "tsunami/frontend"
     ],
     "allowScripts": {
-        "sharp@0.32.6": true,
         "@parcel/watcher@2.5.1": true,
         "@swc/core@1.15.11": true,
         "core-js@3.45.1": true,

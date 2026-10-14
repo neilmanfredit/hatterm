@@ -100,7 +100,7 @@ jobs:
               env:
                   USE_SYSTEM_FPM: true
 
-            - name: Build Linux ARM64 (cross-compile from x64)
+            - name: Build Linux ARM64 server binary (cross-compile from x64)
               if: matrix.platform == 'linux'
               run: |
                   VERSION=$(node version.cjs)
@@ -111,9 +111,6 @@ jobs:
                     -ldflags "-X main.BuildTime=${BUILDTIME} -X main.WaveVersion=${VERSION}" \
                     -o dist/bin/wavesrv.arm64 \
                     cmd/server/main-server.go
-                  npm exec electron-builder -- -c electron-builder.config.cjs --linux --arm64 -p never
-              env:
-                  USE_SYSTEM_FPM: true
 
             - name: Build macOS
               if: matrix.platform == 'darwin'

@@ -36,10 +36,14 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Disable Windows Defender scanning (prevents npm EPERM errors)
+            - name: Configure Windows for native module builds
               if: matrix.platform == 'windows'
               shell: powershell
-              run: Add-MpPreference -ExclusionPath "$env:GITHUB_WORKSPACE"
+              run: |
+                  Add-MpPreference -ExclusionPath "$env:GITHUB_WORKSPACE"
+                  Add-MpPreference -ExclusionPath "C:\npm\cache"
+                  Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\npm-cache"
+                  npm config set msvs_version 2022
 
             - name: Install Linux build dependencies
               if: matrix.platform == 'linux'

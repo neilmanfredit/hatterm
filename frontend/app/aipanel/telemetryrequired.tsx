@@ -63,12 +63,12 @@ const TelemetryRequiredMessage = ({ className }: TelemetryRequiredMessageProps) 
                                     <p>
                                         For information about BYOK and local model support, see{" "}
                                         <a
-                                            href="https://docs.waveterm.dev/waveai-modes"
+                                            href="https://github.com/neilmanfredit/hatterm"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="!text-secondary hover:!text-accent/80 cursor-pointer"
                                         >
-                                            https://docs.waveterm.dev/waveai-modes
+                                            https://github.com/neilmanfredit/hatterm
                                         </a>
                                         .
                                     </p>
@@ -86,7 +86,7 @@ const TelemetryRequiredMessage = ({ className }: TelemetryRequiredMessageProps) 
 
                     <div className="text-xs text-secondary">
                         <a
-                            href="https://waveterm.dev/privacy"
+                            href="https://github.com/neilmanfredit/hatterm"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="!text-secondary hover:!text-accent/80 cursor-pointer"

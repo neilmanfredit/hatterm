@@ -7,7 +7,8 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { WebView, WebViewModel } from "@/app/view/webview/webview";
 import { atom } from "jotai";
 
-const docsiteUrl = "https://docs.waveterm.dev/?ref=app";
+// Modified by Neil Manfred, 2026: point help view home to hatterm GitHub instead of Wave docs.
+const docsiteUrl = "https://github.com/neilmanfredit/hatterm";
 
 class HelpViewModel extends WebViewModel {
     get viewComponent(): ViewComponent {

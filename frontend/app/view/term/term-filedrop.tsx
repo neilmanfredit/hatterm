@@ -20,38 +20,48 @@ interface TermFileDropState {
     error: string | null;
 }
 
+function getUriConnection(uri: string): string {
+    const m = uri.match(/^wsh:\/\/([^/]+)/);
+    return m?.[1] ?? "local";
+}
+
+function isCrossHost(srcUri: string, destConn: string): boolean {
+    const srcConn = getUriConnection(srcUri);
+    const norm = (c: string) => (!c || c === "" ? "local" : c);
+    return norm(srcConn) !== norm(destConn);
+}
+
+const TIMEOUT = 31536000000;
+
+async function doCopy(srcUri: string, destUri: string, overwrite: boolean, crossHost: boolean): Promise<void> {
+    const opts = { timeout: TIMEOUT, overwrite };
+    if (crossHost) {
+        await RpcApi.RemoteFileCopyCommand(TabRpcClient, { srcuri: srcUri, desturi: destUri, opts }, { timeout: TIMEOUT });
+    } else {
+        await RpcApi.FileCopyCommand(TabRpcClient, { srcuri: srcUri, desturi: destUri, opts }, { timeout: TIMEOUT });
+    }
+}
+
 async function copyFilesToTerminal(
     srcUris: string[],
     connection: string,
     cwd: string,
-    onStatus: (s: string) => void,
+    onStatus: (s: string | null) => void,
     onError: (s: string) => void
 ) {
-    const conn = connection || "local";
+    const destConn = connection || "local";
     for (const srcUri of srcUris) {
         const fileName = srcUri.split("/").pop() ?? "file";
-        const destUri = formatRemoteUri(`${cwd}/${fileName}`, conn);
+        const destUri = formatRemoteUri(`${cwd}/${fileName}`, destConn);
+        const crossHost = isCrossHost(srcUri, destConn);
         onStatus(`Copying ${fileName}…`);
         try {
-            await RpcApi.FileCopyCommand(
-                TabRpcClient,
-                { srcuri: srcUri, desturi: destUri, opts: { timeout: 31536000000 } },
-                { timeout: 31536000000 }
-            );
+            await doCopy(srcUri, destUri, false, crossHost);
         } catch (e) {
             const msg = `${e}`;
-            // attempt overwrite on conflict
             if (msg.includes("exists") || msg.includes("overwrite")) {
                 try {
-                    await RpcApi.FileCopyCommand(
-                        TabRpcClient,
-                        {
-                            srcuri: srcUri,
-                            desturi: destUri,
-                            opts: { timeout: 31536000000, overwrite: true },
-                        },
-                        { timeout: 31536000000 }
-                    );
+                    await doCopy(srcUri, destUri, true, crossHost);
                 } catch (e2) {
                     onError(`Failed to copy ${fileName}: ${e2}`);
                     return;
@@ -83,14 +93,13 @@ const TermFileDrop = ({ blockId, connection, cwd, children }: TermFileDropProps)
         setDropState({ active: false, status: null, error: s });
     }, []);
 
-    // react-dnd drop: accepts FILE_ITEM from wave file browser
+    // react-dnd: FILE_ITEM drops from the hatterm file browser
     const [{ isOver }, dropRef] = useDrop(
         () => ({
             accept: "FILE_ITEM",
             collect: (monitor) => ({ isOver: monitor.isOver() }),
             drop: (item: { uri: string; name: string }, monitor) => {
-                if (monitor.didDrop()) return;
-                if (!cwd) return;
+                if (monitor.didDrop() || !cwd) return;
                 setDropState({ active: true, status: "Copying…", error: null });
                 void copyFilesToTerminal([item.uri], connection, cwd, onStatus, onError);
             },
@@ -98,29 +107,21 @@ const TermFileDrop = ({ blockId, connection, cwd, children }: TermFileDropProps)
         [connection, cwd]
     );
 
-    // Native OS file drag (e.g. from Dolphin/Finder)
-    const handleDragOver = React.useCallback(
-        (e: React.DragEvent<HTMLDivElement>) => {
-            if (e.dataTransfer.types.includes("Files")) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!nativeDragActive.current) {
-                    nativeDragActive.current = true;
-                    setDropState((prev) => ({ ...prev, active: true }));
-                }
+    // Native OS file drag (Finder, Dolphin, Explorer)
+    const handleDragOver = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
+        if (e.dataTransfer.types.includes("Files")) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!nativeDragActive.current) {
+                nativeDragActive.current = true;
+                setDropState((prev) => ({ ...prev, active: true }));
             }
-        },
-        []
-    );
+        }
+    }, []);
 
     const handleDragLeave = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-        if (
-            e.clientX < rect.left ||
-            e.clientX > rect.right ||
-            e.clientY < rect.top ||
-            e.clientY > rect.bottom
-        ) {
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
             nativeDragActive.current = false;
             setDropState((prev) => ({ ...prev, active: false }));
         }
@@ -131,12 +132,12 @@ const TermFileDrop = ({ blockId, connection, cwd, children }: TermFileDropProps)
             nativeDragActive.current = false;
             if (!e.dataTransfer.files.length) return;
             if (!cwd) {
-                setDropState({ active: false, status: null, error: "Cannot drop: terminal CWD unknown" });
+                setDropState({ active: false, status: null, error: "Cannot drop: terminal working directory unknown — type a command first to establish CWD" });
                 return;
             }
             e.preventDefault();
             e.stopPropagation();
-            // Electron exposes File.path for native files
+            // Electron exposes the native filesystem path on File objects
             const srcUris: string[] = [];
             for (let i = 0; i < e.dataTransfer.files.length; i++) {
                 const f = e.dataTransfer.files[i] as File & { path?: string };

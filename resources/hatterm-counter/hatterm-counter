@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+# Copyright 2026 Neil Manfred
+# SPDX-License-Identifier: Apache-2.0
+#
+# Launcher script bundled inside the hatterm app package.
+# Works as a drop-in statusLine command for Claude Code and Gemini CLI hooks.
+#
+# Installed paths (read-only — do not edit):
+#   Linux:   /opt/hatterm/resources/hatterm-counter/hatterm-counter
+#   macOS:   /Applications/hatterm.app/Contents/Resources/hatterm-counter/hatterm-counter
+
+import os
+import sys
+
+# Add the directory containing this script to the path so the
+# hatterm_counter package can be imported without a pip install.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from hatterm_counter.cli import main
+
+if __name__ == "__main__":
+    main()

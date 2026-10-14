@@ -36,6 +36,10 @@ const config = {
             from: "dist/tsunamiscaffold",
             to: "tsunamiscaffold",
         },
+        {
+            from: "resources/hatterm-counter",
+            to: "hatterm-counter",
+        },
     ],
     directories: {
         output: "make",

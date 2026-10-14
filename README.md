@@ -163,36 +163,50 @@ Drop any file onto an open terminal session. hatterm reads the terminal's curren
 
 ### AI usage counter
 
-Install the `hatterm-counter` Python library (Apache 2.0):
+`hatterm-counter` is **bundled inside the hatterm install** — no separate pip install needed. It is shipped as part of the app package under the `resources/hatterm-counter/` directory.
 
-```bash
-pip install --user /path/to/hatterm-counter
-# or, once published to PyPI:
-pip install hatterm-counter
-```
+Installed paths:
 
-**Standalone dashboard:**
+| Platform | Path |
+|----------|------|
+| Linux (deb/pacman) | `/opt/hatterm/resources/hatterm-counter/hatterm-counter` |
+| macOS | `/Applications/hatterm.app/Contents/Resources/hatterm-counter/hatterm-counter` |
+
+Python 3.10+ must be available on your `PATH` (it is on most systems by default).
+
+**Standalone dashboard** (run directly):
 ```bash
-hatterm-counter
+# Linux
+python3 /opt/hatterm/resources/hatterm-counter/hatterm-counter
+
+# macOS
+python3 /Applications/hatterm.app/Contents/Resources/hatterm-counter/hatterm-counter
 ```
 
 **Claude Code statusLine hook** — add to `~/.claude/settings.json`:
 ```json
 {
     "statusLine": {
-        "command": "hatterm-counter",
+        "command": "python3 /opt/hatterm/resources/hatterm-counter/hatterm-counter",
         "timeout": 5000
     }
 }
 ```
+On macOS replace the path with the macOS one above.
 
 **Gemini CLI hook** — add to `~/.gemini/settings.json`:
 ```json
 {
     "hooks": {
-        "AfterAgent": "hatterm-counter"
+        "AfterAgent": "python3 /opt/hatterm/resources/hatterm-counter/hatterm-counter"
     }
 }
+```
+
+**Optional: add a shell alias** for convenience:
+```bash
+# add to ~/.bashrc or ~/.zshrc
+alias hatterm-counter='python3 /opt/hatterm/resources/hatterm-counter/hatterm-counter'
 ```
 
 ---

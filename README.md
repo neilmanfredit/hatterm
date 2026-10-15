@@ -32,15 +32,15 @@ Everything in Wave Terminal, plus:
 | AI usage counter | `hatterm-counter` library tracks Claude Code + Gemini sessions; statusLine hook + standalone dashboard |
 | No telemetry | Wave cloud endpoints disabled by default; no data sent to Command Line Inc. servers |
 | No auto-update | Update check disabled by default; updates are manual via GitHub Releases |
-| SSH + tmux new-tab | Open a new tab directly into an SSH host or an existing tmux session on that host |
+| tmux new-tab | Open a new tab into a local tmux session, an SSH host, or a tmux session on a remote host |
 
 ---
 
 ## Connecting to remote hosts
 
-### Opening an SSH terminal in a new tab
+### Opening a terminal in a new tab
 
-Click the **New Tab** button (the `+` at the bottom of the tab bar) to reveal a dropdown with three options:
+Click the **New Tab** button (the `+` at the bottom of the tab bar) to reveal a dropdown with four options:
 
 | Option | What it opens |
 |--------|---------------|
@@ -92,10 +92,13 @@ Download the latest release from [Releases](https://github.com/neilmanfredit/hat
 |----------|------|
 | Arch Linux (x86\_64) | `hatterm-linux-x64-*.pacman` |
 | Debian/Ubuntu (x86\_64) | `hatterm-linux-x64-*.deb` |
+| RPM-based (Fedora, RHEL, openSUSE) x86\_64 | `hatterm-linux-x64-*.rpm` |
 | AppImage (x86\_64) | `hatterm-linux-x64-*.AppImage` |
+| Snap (x86\_64) | `hatterm-linux-x64-*.snap` |
 | macOS (Apple Silicon) | `hatterm-darwin-arm64-*.dmg` |
 | macOS (Intel) | `hatterm-darwin-x64-*.dmg` |
 | Windows (x64) | `hatterm-win32-x64-*.exe` (NSIS installer) |
+| Windows (x64) | `hatterm-win32-x64-*.msi` (MSI installer) |
 
 ### Arch Linux (pacman)
 

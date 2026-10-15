@@ -1,12 +1,12 @@
-# Contributing to Wave Terminal
+# Contributing to hatterm
 
-Wave Terminal is an opinionated project with a single active maintainer. Contributions are welcome, but **alignment matters more than volume**.
+hatterm is an opinionated project with a single active maintainer. Contributions are welcome, but **alignment matters more than volume**.
 
 This document helps you decide _whether_ and _how_ to contribute in a way that's likely to be accepted, saving both of us time.
 
 ## High-level expectations
 
-- Wave has a strong product direction and centralized ownership.
+- hatterm has a strong product direction and centralized ownership.
 - Review bandwidth is limited.
 - Not all contributions can or will be accepted, even if they are technically correct.
 
@@ -18,7 +18,7 @@ The following are most likely to be accepted:
 
 - **Bug fixes** - especially with clear reproduction steps
 - **Documentation improvements** - typos, clarifications, examples
-- **Discussed features** - after alignment in Discord
+- **Discussed features** - after alignment via a GitHub issue
 - **Small, focused changes** - easy to review and low risk
 
 If your change is small and obvious (typo fix, narrowly-scoped bug fix, small docs improvement), you are welcome to open a pull request directly.
@@ -51,7 +51,7 @@ This includes:
 - Architectural changes
 - Changes that touch many files or systems
 
-**Where to discuss:** Discord is the preferred place for these conversations -- https://discord.gg/XfvZ334gwU
+**Where to discuss:** Open a [GitHub issue](https://github.com/neilmanfredit/hatterm/issues) to start the conversation before writing code.
 
 Pull requests that introduce larger changes without prior discussion will be closed without detailed review.
 
@@ -61,7 +61,7 @@ This is not meant to discourage contribution — it is meant to ensure alignment
 
 To set expectations clearly:
 
-- Wave is not designed as a "first open source contribution" project
+- hatterm is not designed as a "first open source contribution" project
 - We do not currently curate beginner-friendly or mentorship issues
 - Large, unsolicited changes are unlikely to be accepted
 - Mechanical refactors, broad style changes, or drive-by rewrites are not helpful
@@ -75,7 +75,7 @@ Being clear about this helps everyone spend their time effectively.
 A: No, just open a PR for small, obvious fixes.
 
 **Q: I have an idea for a new feature.**  
-A: Great! Come discuss it in Discord first. Do not open a PR without prior discussion.
+A: Great! [Open a GitHub issue](https://github.com/neilmanfredit/hatterm/issues) to discuss it first. Do not open a PR without prior discussion.
 
 **Q: My PR was closed without detailed feedback.**  
 A: This usually means it didn't align with project direction or required more review bandwidth than available. This is normal for a solo-maintained project.
@@ -108,4 +108,4 @@ All contributors are expected to follow the project's [Code of Conduct](./CODE_O
 
 ---
 
-Thank you for your interest in Wave Terminal. Clear expectations help keep the project moving quickly and sustainably.
+Thank you for your interest in hatterm. Clear expectations help keep the project moving quickly and sustainably.

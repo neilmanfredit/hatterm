@@ -125,26 +125,25 @@ const InitPage = ({
                         <div>
                             <a
                                 target="_blank"
-                                href="https://discord.gg/XfvZ334gwU"
+                                href="https://github.com/neilmanfredit/hatterm/issues"
                                 rel="noopener"
                                 className="text-accent"
                             >
-                                <i className="text-[25px] text-white/50 fa-solid fa-people-group"></i>
+                                <i className="text-[25px] text-white/50 fa-brands fa-github"></i>
                             </a>
                         </div>
                         <div className="flex flex-col items-start gap-1 flex-1">
-                            <div className="text-foreground text-base leading-[18px]">Join our Community</div>
+                            <div className="text-foreground text-base leading-[18px]">Report Issues &amp; Feedback</div>
                             <div className="text-secondary leading-5">
-                                Get help, submit feature requests, report bugs, or just chat with fellow terminal
-                                enthusiasts.
+                                Get help, submit feature requests, or report bugs.
                                 <br />
                                 <a
                                     target="_blank"
-                                    href="https://discord.gg/XfvZ334gwU"
+                                    href="https://github.com/neilmanfredit/hatterm/issues"
                                     rel="noopener"
                                     className="text-accent"
                                 >
-                                    Join the Wave&nbsp;Discord&nbsp;Channel
+                                    Open an issue on GitHub
                                 </a>
                             </div>
                         </div>

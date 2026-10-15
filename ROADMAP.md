@@ -1,8 +1,8 @@
-# Wave Terminal Roadmap
+# hatterm Roadmap
 
-This roadmap outlines major upcoming features and improvements for Wave Terminal. As with any roadmap, priorities and timelines may shift as development progresses.
+This roadmap outlines major upcoming features and improvements for hatterm. As with any roadmap, priorities and timelines may shift as development progresses.
 
-Want input on the roadmap? Join the discussion on [Discord](https://discord.gg/XfvZ334gwU).
+Want input on the roadmap? [Open an issue on GitHub](https://github.com/neilmanfredit/hatterm/issues).
 
 Legend: ✅ Done | 🔧 In Progress | 🔷 Planned | 🤞 Stretch Goal
 

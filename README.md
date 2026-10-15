@@ -32,6 +32,44 @@ Everything in Wave Terminal, plus:
 | AI usage counter | `hatterm-counter` library tracks Claude Code + Gemini sessions; statusLine hook + standalone dashboard |
 | No telemetry | Wave cloud endpoints disabled by default; no data sent to Command Line Inc. servers |
 | No auto-update | Update check disabled by default; updates are manual via GitHub Releases |
+| SSH + tmux new-tab | Open a new tab directly into an SSH host or an existing tmux session on that host |
+
+---
+
+## Connecting to remote hosts
+
+### Opening an SSH terminal in a new tab
+
+Click the **New Tab** button (the `+` at the bottom of the tab bar) to reveal a dropdown with three options:
+
+| Option | What it opens |
+|--------|---------------|
+| **Local** | Standard local shell tab (same as before) |
+| **SSH** | Picks an SSH connection → opens a new tab with that host's shell |
+| **SSH + Tmux** | Picks an SSH connection → lists existing tmux sessions on that host → opens a new tab attached to the chosen session |
+
+#### SSH
+
+1. Click **New Tab → SSH**.
+2. A picker appears listing all connections defined in your `connections.json` (Settings → Connections).
+3. Type to filter, then click a host. A new tab opens with a remote shell on that host.
+
+> **First time connecting to a host?** Add it first via **Settings → Connections** or type a new `user@host` address directly in the connection picker. hatterm installs its `wsh` agent on the remote automatically on first connect.
+
+#### SSH + Tmux
+
+1. Click **New Tab → SSH + Tmux**.
+2. Pick a host from the connection picker (same as above). hatterm connects and queries tmux for existing sessions.
+3. A session list appears:
+   - **New tmux session** — starts a fresh `tmux new-session` on the remote.
+   - Any existing session name — attaches to that session with `tmux attach-session -t <name>`.
+4. A new tab opens running the chosen session inside the SSH connection.
+
+> **tmux not installed?** The session list will be empty. Choose **New tmux session** and hatterm will start one, provided `tmux` is on the remote's `PATH`.
+
+### Switching connections on an existing terminal
+
+To move an already-open terminal block to a different host, click the **connection indicator** in the block's title bar (top-left corner, shows the current host name or a computer icon for local). This opens the same connection picker used elsewhere.
 
 ---
 
@@ -44,9 +82,7 @@ Download the latest release from [Releases](https://github.com/neilmanfredit/hat
 | Platform | File |
 |----------|------|
 | Arch Linux (x86\_64) | `hatterm-linux-x64-*.pacman` |
-| Arch Linux (aarch64) | `hatterm-linux-arm64-*.pacman` |
 | Debian/Ubuntu (x86\_64) | `hatterm-linux-x64-*.deb` |
-| Debian/Ubuntu (arm64) | `hatterm-linux-arm64-*.deb` |
 | AppImage (x86\_64) | `hatterm-linux-x64-*.AppImage` |
 | macOS (Apple Silicon) | `hatterm-darwin-arm64-*.dmg` |
 | macOS (Intel) | `hatterm-darwin-x64-*.dmg` |

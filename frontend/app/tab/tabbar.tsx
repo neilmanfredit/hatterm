@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Tooltip } from "@/app/element/tooltip";
+import { SshTmuxModal, SshTmuxModalMode } from "@/app/modals/sshtmux-modal";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { useWaveEnv } from "@/app/waveenv/waveenv";
 import { WorkspaceLayoutModel } from "@/app/workspace/workspace-layout-model";
@@ -101,6 +102,8 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
     const [draggingTab, setDraggingTab] = useState<string>();
     const [tabsLoaded, setTabsLoaded] = useState({});
     const [newTabId, setNewTabId] = useState<string | null>(null);
+    const [newTabDropdownOpen, setNewTabDropdownOpen] = useState(false);
+    const [sshTmuxModal, setSshTmuxModal] = useState<SshTmuxModalMode>(null);
 
     const tabbarWrapperRef = useRef<HTMLDivElement>(null);
     const tabBarRef = useRef<HTMLDivElement>(null);
@@ -655,15 +658,67 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
                         })}
                 </div>
             </div>
-            <button
-                ref={addBtnRef}
-                title="Add Tab"
-                className={`flex h-[22px] px-2 mb-1 mx-1 items-center rounded-md box-border cursor-pointer hover:bg-hoverbg transition-colors text-[12px] text-secondary hover:text-primary${noTabs ? " invisible" : ""}`}
-                style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-                onClick={handleAddTab}
-            >
-                <i className="fa fa-solid fa-plus" />
-            </button>
+            <div className="relative flex items-end mb-1 mx-1">
+                <button
+                    ref={addBtnRef}
+                    title="Add Tab"
+                    className={`flex h-[22px] px-2 items-center rounded-md box-border cursor-pointer hover:bg-hoverbg transition-colors text-[12px] text-secondary hover:text-primary${noTabs ? " invisible" : ""}`}
+                    style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+                    onClick={() => setNewTabDropdownOpen((v) => !v)}
+                >
+                    <i className="fa fa-solid fa-plus" />
+                </button>
+                {newTabDropdownOpen && (
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setNewTabDropdownOpen(false)} />
+                        <div className="absolute top-full left-0 mt-1 z-50 bg-zinc-800 border border-zinc-600 rounded shadow-lg min-w-[180px]">
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    handleAddTab();
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-desktop w-4 text-center text-zinc-500" />
+                                <span>Local</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("ssh");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-network-wired w-4 text-center text-zinc-500" />
+                                <span>SSH</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("sshtmux");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <span>SSH + Tmux</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("localtmux");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <span>Tmux (local)</span>
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+            {sshTmuxModal != null && (
+                <SshTmuxModal mode={sshTmuxModal} onClose={() => setSshTmuxModal(null)} />
+            )}
             <div className="flex-1" />
             <div ref={rightContainerRef} className="flex flex-row gap-1 items-end">
                 <UpdateStatusBanner />

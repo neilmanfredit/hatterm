@@ -671,15 +671,15 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
                 {newTabDropdownOpen && (
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setNewTabDropdownOpen(false)} />
-                        <div className="absolute top-full left-0 mt-1 z-50 bg-zinc-800 border border-zinc-600 rounded shadow-lg min-w-[180px]">
+                        <div className="absolute top-full left-0 mt-1 z-50 bg-zinc-600 border border-zinc-400 rounded shadow-xl min-w-[180px]">
                             <button
                                 onClick={() => {
                                     setNewTabDropdownOpen(false);
                                     handleAddTab();
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-500 hover:text-white cursor-pointer transition-colors text-left"
                             >
-                                <i className="fa fa-desktop w-4 text-center text-zinc-500" />
+                                <i className="fa fa-desktop w-4 text-center text-zinc-300" />
                                 <span>Local</span>
                             </button>
                             <button
@@ -687,9 +687,9 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
                                     setNewTabDropdownOpen(false);
                                     setSshTmuxModal("ssh");
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-500 hover:text-white cursor-pointer transition-colors text-left"
                             >
-                                <i className="fa fa-network-wired w-4 text-center text-zinc-500" />
+                                <i className="fa fa-network-wired w-4 text-center text-zinc-300" />
                                 <span>SSH</span>
                             </button>
                             <button
@@ -697,9 +697,9 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
                                     setNewTabDropdownOpen(false);
                                     setSshTmuxModal("sshtmux");
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-500 hover:text-white cursor-pointer transition-colors text-left"
                             >
-                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <i className="fa fa-terminal w-4 text-center text-zinc-300" />
                                 <span>SSH + Tmux</span>
                             </button>
                             <button
@@ -707,9 +707,9 @@ const TabBar = memo(({ workspace, noTabs }: TabBarProps) => {
                                     setNewTabDropdownOpen(false);
                                     setSshTmuxModal("localtmux");
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-500 hover:text-white cursor-pointer transition-colors text-left"
                             >
-                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <i className="fa fa-terminal w-4 text-center text-zinc-300" />
                                 <span>Tmux (local)</span>
                             </button>
                         </div>

@@ -441,46 +441,57 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
 
                 {newTabDropdownOpen && (
                     <>
-                        <div className="fixed inset-0 z-40" onClick={() => setNewTabDropdownOpen(false)} />
-                        <div className="absolute bottom-0 left-full ml-1 z-50 bg-zinc-200 border border-zinc-400 rounded shadow-xl min-w-[180px]">
+                        <div
+                            className="fixed inset-0 z-40"
+                            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
+                            onClick={() => setNewTabDropdownOpen(false)}
+                        />
+                        <div
+                            className="absolute bottom-0 left-full ml-1 z-50 rounded shadow-xl min-w-[180px] overflow-hidden"
+                            style={{
+                                background: "#e4e4e7",
+                                border: "1px solid #a1a1aa",
+                                WebkitAppRegion: "no-drag",
+                            } as React.CSSProperties}
+                        >
                             <button
-                                onClick={() => {
-                                    setNewTabDropdownOpen(false);
-                                    env.electron.createTab();
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-300 cursor-pointer transition-colors text-left"
+                                onClick={() => { setNewTabDropdownOpen(false); env.electron.createTab(); }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
+                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                                <i className="fa fa-desktop w-4 text-center text-zinc-500" />
+                                <i className="fa fa-desktop w-4 text-center" style={{ color: "#71717a" }} />
                                 <span>Local</span>
                             </button>
                             <button
-                                onClick={() => {
-                                    setNewTabDropdownOpen(false);
-                                    setSshTmuxModal("ssh");
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-300 cursor-pointer transition-colors text-left"
+                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("ssh"); }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
+                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                                <i className="fa fa-network-wired w-4 text-center text-zinc-500" />
+                                <i className="fa fa-network-wired w-4 text-center" style={{ color: "#71717a" }} />
                                 <span>SSH</span>
                             </button>
                             <button
-                                onClick={() => {
-                                    setNewTabDropdownOpen(false);
-                                    setSshTmuxModal("sshtmux");
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-300 cursor-pointer transition-colors text-left"
+                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("sshtmux"); }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
+                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <i className="fa fa-terminal w-4 text-center" style={{ color: "#71717a" }} />
                                 <span>SSH + Tmux</span>
                             </button>
                             <button
-                                onClick={() => {
-                                    setNewTabDropdownOpen(false);
-                                    setSshTmuxModal("localtmux");
-                                }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-800 hover:bg-zinc-300 cursor-pointer transition-colors text-left"
+                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("localtmux"); }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
+                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <i className="fa fa-terminal w-4 text-center" style={{ color: "#71717a" }} />
                                 <span>Tmux (local)</span>
                             </button>
                         </div>

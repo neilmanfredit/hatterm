@@ -473,6 +473,16 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
                                 <i className="fa fa-terminal w-4 text-center text-zinc-500" />
                                 <span>SSH + Tmux</span>
                             </button>
+                            <button
+                                onClick={() => {
+                                    setNewTabDropdownOpen(false);
+                                    setSshTmuxModal("localtmux");
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                            >
+                                <i className="fa fa-terminal w-4 text-center text-zinc-500" />
+                                <span>Tmux (local)</span>
+                            </button>
                         </div>
                     </>
                 )}

@@ -45,8 +45,17 @@ Click the **New Tab** button (the `+` at the bottom of the tab bar) to reveal a 
 | Option | What it opens |
 |--------|---------------|
 | **Local** | Standard local shell tab (same as before) |
+| **Tmux (local)** | Lists tmux sessions on the local machine → opens a new tab attached to the chosen session |
 | **SSH** | Picks an SSH connection → opens a new tab with that host's shell |
 | **SSH + Tmux** | Picks an SSH connection → lists existing tmux sessions on that host → opens a new tab attached to the chosen session |
+
+#### Tmux (local)
+
+1. Click **New Tab → Tmux (local)**.
+2. hatterm queries your local tmux server for existing sessions.
+3. Pick a session to attach to, or choose **New tmux session** to start a fresh one.
+
+> **tmux not running locally?** Choose **New tmux session** and hatterm will start one, provided `tmux` is on your `PATH`.
 
 #### SSH
 

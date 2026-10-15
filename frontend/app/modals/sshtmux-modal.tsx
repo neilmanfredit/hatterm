@@ -9,7 +9,7 @@ import { fireAndForget, makeConnRoute } from "@/util/util";
 import * as jotai from "jotai";
 import { memo, useEffect, useRef, useState } from "react";
 
-export type SshTmuxModalMode = "ssh" | "sshtmux";
+export type SshTmuxModalMode = "ssh" | "sshtmux" | "localtmux";
 
 interface SshTmuxModalProps {
     mode: SshTmuxModalMode;
@@ -19,17 +19,28 @@ interface SshTmuxModalProps {
 type Step = "conn" | "tmux";
 
 export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
-    const [step, setStep] = useState<Step>("conn");
+    const isLocal = mode === "localtmux";
+    const initialStep: Step = isLocal ? "tmux" : "conn";
+
+    const [step, setStep] = useState<Step>(initialStep);
     const [connList, setConnList] = useState<string[]>([]);
-    const [connLoading, setConnLoading] = useState(true);
-    const [selectedConn, setSelectedConn] = useState<string>(null);
+    const [connLoading, setConnLoading] = useState(!isLocal);
+    const [selectedConn, setSelectedConn] = useState<string>(isLocal ? null : null);
     const [tmuxSessions, setTmuxSessions] = useState<string[]>([]);
-    const [tmuxLoading, setTmuxLoading] = useState(false);
+    const [tmuxLoading, setTmuxLoading] = useState(isLocal);
     const [filterText, setFilterText] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
     const workspaceId = jotai.useAtomValue(atoms.workspaceId);
 
     useEffect(() => {
+        if (isLocal) {
+            const route = makeConnRoute(null);
+            RpcApi.RemoteTmuxListSessionsCommand(TabRpcClient, { route, timeout: 5000 })
+                .then((sessions) => setTmuxSessions(sessions ?? []))
+                .catch(() => setTmuxSessions([]))
+                .finally(() => setTmuxLoading(false));
+            return;
+        }
         RpcApi.ConnListCommand(TabRpcClient, { timeout: 5000 })
             .then((list) => setConnList(list ?? []))
             .catch(() => setConnList([]))
@@ -67,9 +78,11 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
             meta: {
                 view: "term",
                 controller: "shell",
-                connection: conn,
             },
         };
+        if (conn != null) {
+            blockDef.meta.connection = conn;
+        }
         if (newTmux) {
             blockDef.meta["cmd:initscript"] = `exec tmux new-session`;
         } else if (tmuxSession != null) {
@@ -86,8 +99,15 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
     const filteredConns = connList.filter((c) => c.toLowerCase().includes(filterText.toLowerCase()));
     const filteredSessions = tmuxSessions.filter((s) => s.toLowerCase().includes(filterText.toLowerCase()));
 
-    const title = step === "conn" ? (mode === "ssh" ? "New SSH Tab" : "New SSH + Tmux Tab") : `Tmux Sessions on ${selectedConn}`;
+    const connLabel = selectedConn ?? "localhost";
+    let title: string;
+    if (step === "conn") {
+        title = mode === "ssh" ? "New SSH Tab" : "New SSH + Tmux Tab";
+    } else {
+        title = `Tmux Sessions — ${connLabel}`;
+    }
     const placeholder = step === "conn" ? "Filter connections..." : "Filter sessions...";
+    const tmuxLoadingLabel = isLocal ? "Listing local sessions..." : "Connecting and listing sessions...";
 
     return (
         <div
@@ -154,7 +174,7 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                     {step === "tmux" && (
                         <>
                             {tmuxLoading && (
-                                <div className="px-4 py-3 text-sm text-zinc-500">Connecting and listing sessions...</div>
+                                <div className="px-4 py-3 text-sm text-zinc-500">{tmuxLoadingLabel}</div>
                             )}
                             {!tmuxLoading && (
                                 <>
@@ -180,17 +200,20 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                                     ))}
                                 </>
                             )}
-                            <button
-                                onClick={() => {
-                                    setStep("conn");
-                                    setFilterText("");
-                                    setSelectedConn(null);
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300 cursor-pointer transition-colors text-left border-t border-zinc-800 mt-1"
-                            >
-                                <i className="fa fa-arrow-left w-4 text-center" />
-                                <span>Back to connections</span>
-                            </button>
+                            {!isLocal && (
+                                <button
+                                    onClick={() => {
+                                        setStep("conn");
+                                        setFilterText("");
+                                        setSelectedConn(null);
+                                        setTmuxSessions([]);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300 cursor-pointer transition-colors text-left border-t border-zinc-800 mt-1"
+                                >
+                                    <i className="fa fa-arrow-left w-4 text-center" />
+                                    <span>Back to connections</span>
+                                </button>
+                            )}
                         </>
                     )}
                 </div>

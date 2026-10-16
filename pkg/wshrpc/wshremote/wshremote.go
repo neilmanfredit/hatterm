@@ -153,7 +153,7 @@ func (impl *ServerImpl) getWshPath() (string, error) {
 	if impl.IsLocal {
 		return filepath.Join(wavebase.GetWaveDataDir(), "bin", "wsh"), nil
 	}
-	wshPath, err := wavebase.ExpandHomeDir("~/.waveterm/bin/wsh")
+	wshPath, err := wavebase.ExpandHomeDir(fmt.Sprintf("~/%s/%s/wsh", wavebase.RemoteWaveHomeDirName, wavebase.RemoteWshBinDirName))
 	if err != nil {
 		return "", fmt.Errorf("cannot expand wsh path: %w", err)
 	}

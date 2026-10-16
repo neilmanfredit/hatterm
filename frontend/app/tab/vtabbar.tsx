@@ -13,6 +13,7 @@ import { validateCssColor } from "@/util/color-validator";
 import { cn, fireAndForget } from "@/util/util";
 import { useAtomValue } from "jotai";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { buildTabBarContextMenu, buildTabContextMenu } from "./tabcontextmenu";
 import { UpdateStatusBanner } from "./updatebanner";
 import { VTab, VTabItem } from "./vtab";
@@ -200,6 +201,7 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
     const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
     const [isNewTabHovered, setIsNewTabHovered] = useState(false);
     const [newTabDropdownOpen, setNewTabDropdownOpen] = useState(false);
+    const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>(null);
     const [sshTmuxModal, setSshTmuxModal] = useState<SshTmuxModalMode>(null);
     const newTabBtnRef = useRef<HTMLButtonElement>(null);
     const dragSourceRef = useRef<string | null>(null);
@@ -428,7 +430,17 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
                     type="button"
                     ref={newTabBtnRef}
                     className="group relative flex h-9 w-full cursor-pointer items-center gap-1.5 pl-3 pr-3 text-xs text-secondary/60 transition-colors hover:text-primary select-none whitespace-nowrap"
-                    onClick={() => setNewTabDropdownOpen((v) => !v)}
+                    onClick={() => {
+                        if (newTabDropdownOpen) {
+                            setNewTabDropdownOpen(false);
+                            return;
+                        }
+                        const rect = newTabBtnRef.current?.getBoundingClientRect();
+                        if (rect) {
+                            setDropdownPos({ top: rect.top, left: rect.right + 4 });
+                        }
+                        setNewTabDropdownOpen(true);
+                    }}
                     onMouseEnter={() => setIsNewTabHovered(true)}
                     onMouseLeave={() => setIsNewTabHovered(false)}
                     aria-label="New Tab"
@@ -438,66 +450,50 @@ export function VTabBar({ workspace, className }: VTabBarProps) {
                     <span>New Tab</span>
                     <i className="fa fa-chevron-right ml-auto mr-1 text-[8px] opacity-50" />
                 </button>
-
-                {newTabDropdownOpen && (
-                    <>
-                        <div
-                            className="fixed inset-0 z-40"
-                            style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-                            onClick={() => setNewTabDropdownOpen(false)}
-                        />
-                        <div
-                            className="absolute bottom-0 left-full ml-1 z-50 rounded shadow-xl min-w-[180px] overflow-hidden"
-                            style={{
-                                background: "#e4e4e7",
-                                border: "1px solid #a1a1aa",
-                                WebkitAppRegion: "no-drag",
-                            } as React.CSSProperties}
-                        >
-                            <button
-                                onClick={() => { setNewTabDropdownOpen(false); env.electron.createTab(); }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
-                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                            >
-                                <i className="fa fa-desktop w-4 text-center" style={{ color: "#71717a" }} />
-                                <span>Local</span>
-                            </button>
-                            <button
-                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("ssh"); }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
-                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                            >
-                                <i className="fa fa-network-wired w-4 text-center" style={{ color: "#71717a" }} />
-                                <span>SSH</span>
-                            </button>
-                            <button
-                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("sshtmux"); }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
-                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                            >
-                                <i className="fa fa-terminal w-4 text-center" style={{ color: "#71717a" }} />
-                                <span>SSH + Tmux</span>
-                            </button>
-                            <button
-                                onClick={() => { setNewTabDropdownOpen(false); setSshTmuxModal("localtmux"); }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors text-left"
-                                style={{ color: "#27272a", background: "transparent" } as React.CSSProperties}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                            >
-                                <i className="fa fa-terminal w-4 text-center" style={{ color: "#71717a" }} />
-                                <span>Tmux (local)</span>
-                            </button>
-                        </div>
-                    </>
-                )}
             </div>
+
+            {newTabDropdownOpen && dropdownPos && createPortal(
+                <>
+                    <div
+                        style={{ position: "fixed", inset: 0, zIndex: 9998, WebkitAppRegion: "no-drag" } as React.CSSProperties}
+                        onClick={() => setNewTabDropdownOpen(false)}
+                    />
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: dropdownPos.top,
+                            left: dropdownPos.left,
+                            zIndex: 9999,
+                            background: "#e4e4e7",
+                            border: "1px solid #a1a1aa",
+                            borderRadius: "6px",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+                            minWidth: "180px",
+                            overflow: "hidden",
+                            WebkitAppRegion: "no-drag",
+                        } as React.CSSProperties}
+                    >
+                        {[
+                            { label: "Local", icon: "fa-desktop", action: () => env.electron.createTab() },
+                            { label: "SSH", icon: "fa-network-wired", action: () => setSshTmuxModal("ssh") },
+                            { label: "SSH + Tmux", icon: "fa-terminal", action: () => setSshTmuxModal("sshtmux") },
+                            { label: "Tmux (local)", icon: "fa-terminal", action: () => setSshTmuxModal("localtmux") },
+                        ].map(({ label, icon, action }) => (
+                            <button
+                                key={label}
+                                onClick={() => { setNewTabDropdownOpen(false); action(); }}
+                                style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", padding: "8px 12px", fontSize: "13px", color: "#27272a", background: "transparent", border: "none", cursor: "pointer", textAlign: "left" } as React.CSSProperties}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "#d4d4d8")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                            >
+                                <i className={`fa ${icon}`} style={{ width: "16px", textAlign: "center", color: "#71717a" }} />
+                                <span>{label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </>,
+                document.body
+            )}
 
             {sshTmuxModal != null && (
                 <SshTmuxModal mode={sshTmuxModal} onClose={() => setSshTmuxModal(null)} />

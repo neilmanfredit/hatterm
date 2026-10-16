@@ -8,6 +8,7 @@ import { TabRpcClient } from "@/app/store/wshrpcutil";
 import { fireAndForget, makeConnRoute } from "@/util/util";
 import * as jotai from "jotai";
 import { memo, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export type SshTmuxModalMode = "ssh" | "sshtmux" | "localtmux";
 
@@ -109,15 +110,16 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
     const placeholder = step === "conn" ? "Filter connections..." : "Filter sessions...";
     const tmuxLoadingLabel = isLocal ? "Listing local sessions..." : "Connecting and listing sessions...";
 
-    return (
+    return createPortal(
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)", WebkitAppRegion: "no-drag" } as React.CSSProperties}
             onMouseDown={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
         >
             <div
                 className="bg-zinc-900 border border-zinc-600 rounded-lg shadow-2xl w-[420px] max-h-[500px] flex flex-col overflow-hidden"
+                style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
                 onKeyDown={(e) => {
                     if (e.key === "Escape") onClose();
                 }}
@@ -218,7 +220,8 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 });
 

@@ -838,13 +838,20 @@ func createClientConfig(connCtx context.Context, sshKeywords *wconfig.ConnKeywor
 	}, nil
 }
 
-func connectInternal(ctx context.Context, networkAddr string, clientConfig *ssh.ClientConfig, currentClient *ssh.Client) (*ssh.Client, error) {
+func connectInternal(ctx context.Context, networkAddr string, addressFamily string, clientConfig *ssh.ClientConfig, currentClient *ssh.Client) (*ssh.Client, error) {
+	tcpNetwork := "tcp"
+	switch addressFamily {
+	case "inet":
+		tcpNetwork = "tcp4"
+	case "inet6":
+		tcpNetwork = "tcp6"
+	}
 	var clientConn net.Conn
 	var err error
 	if currentClient == nil {
 		d := net.Dialer{Timeout: clientConfig.Timeout}
-		blocklogger.Infof(ctx, "[conndebug] ssh dial %s\n", networkAddr)
-		clientConn, err = d.DialContext(ctx, "tcp", networkAddr)
+		blocklogger.Infof(ctx, "[conndebug] ssh dial %s (network=%s)\n", networkAddr, tcpNetwork)
+		clientConn, err = d.DialContext(ctx, tcpNetwork, networkAddr)
 		if err != nil {
 			subCode := ClassifyDialErrorSubCode(err)
 			blocklogger.Infof(ctx, "[conndebug] ERROR dial error [%s]: %v\n", subCode, err)
@@ -852,7 +859,7 @@ func connectInternal(ctx context.Context, networkAddr string, clientConfig *ssh.
 		}
 	} else {
 		blocklogger.Infof(ctx, "[conndebug] ssh dial (from client) %s\n", networkAddr)
-		clientConn, err = currentClient.DialContext(ctx, "tcp", networkAddr)
+		clientConn, err = currentClient.DialContext(ctx, tcpNetwork, networkAddr)
 		if err != nil {
 			subCode := ClassifyDialErrorSubCode(err)
 			blocklogger.Infof(ctx, "[conndebug] ERROR dial error [%s]: %v\n", subCode, err)
@@ -951,7 +958,8 @@ func ConnectToClient(connCtx context.Context, opts *SSHOpts, currentClient *ssh.
 		return nil, debugInfo.JumpNum, ConnectionError{ConnectionDebugInfo: debugInfo, Err: err}
 	}
 	networkAddr := utilfn.SafeDeref(sshKeywords.SshHostName) + ":" + utilfn.SafeDeref(sshKeywords.SshPort)
-	client, err := connectInternal(connCtx, networkAddr, clientConfig, debugInfo.CurrentClient)
+	addressFamily := strings.ToLower(utilfn.SafeDeref(sshKeywords.SshAddressFamily))
+	client, err := connectInternal(connCtx, networkAddr, addressFamily, clientConfig, debugInfo.CurrentClient)
 	if err != nil {
 		return client, debugInfo.JumpNum, ConnectionError{ConnectionDebugInfo: debugInfo, Err: err}
 	}
@@ -1105,6 +1113,15 @@ func findSshConfigKeywords(hostPattern string) (connKeywords *wconfig.ConnKeywor
 	rawGlobalKnownHostsFile, _ := WaveSshConfigUserSettings().GetStrict(hostPattern, "GlobalKnownHostsFile")
 	sshKeywords.SshGlobalKnownHostsFile = strings.Fields(rawGlobalKnownHostsFile) // TODO - smarter splitting escaped spaces and quotes
 
+	addressFamilyRaw, err := WaveSshConfigUserSettings().GetStrict(hostPattern, "AddressFamily")
+	if err != nil {
+		return nil, err
+	}
+	addressFamilyClean := strings.ToLower(trimquotes.TryTrimQuotes(addressFamilyRaw))
+	if addressFamilyClean != "" {
+		sshKeywords.SshAddressFamily = utilfn.Ptr(addressFamilyClean)
+	}
+
 	return sshKeywords, nil
 }
 
@@ -1205,6 +1222,9 @@ func mergeKeywords(oldKeywords *wconfig.ConnKeywords, newKeywords *wconfig.ConnK
 	}
 	if newKeywords.SshPasswordSecretName != nil {
 		outKeywords.SshPasswordSecretName = newKeywords.SshPasswordSecretName
+	}
+	if newKeywords.SshAddressFamily != nil {
+		outKeywords.SshAddressFamily = newKeywords.SshAddressFamily
 	}
 
 	return &outKeywords

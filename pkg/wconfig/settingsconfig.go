@@ -422,6 +422,7 @@ type ConnKeywords struct {
 	SshProxyJump                    []string `json:"ssh:proxyjump,omitempty"`
 	SshUserKnownHostsFile           []string `json:"ssh:userknownhostsfile,omitempty"`
 	SshGlobalKnownHostsFile         []string `json:"ssh:globalknownhostsfile,omitempty"`
+	SshAddressFamily                *string  `json:"ssh:addressfamily,omitempty"`
 }
 
 func DefaultBoolPtr(arg *bool, def bool) bool {

@@ -157,7 +157,7 @@ const TermFileDrop = ({ blockId, connection, cwd, children }: TermFileDropProps)
     return (
         <div
             ref={dropRef}
-            className="relative w-full h-full"
+            className="relative flex flex-1 flex-col min-h-0"
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}

@@ -97,7 +97,7 @@ jobs:
                   node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.version='${VERSION}';fs.writeFileSync('package.json',JSON.stringify(p,null,4)+'\n');"
 
             - name: Install Task
-              uses: arduino/setup-task@v2
+              uses: arduino/setup-task@v3
               with:
                   version: 3.x
                   repo-token: ${{ secrets.GITHUB_TOKEN }}

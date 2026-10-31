@@ -1,7 +1,7 @@
 // Copyright 2026 Neil Manfred
 // SPDX-License-Identifier: Apache-2.0
 
-import { atoms } from "@/app/store/global";
+import { atoms, setActiveTab } from "@/app/store/global";
 import { WorkspaceService } from "@/app/store/services";
 import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
@@ -90,6 +90,7 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
             blockDef.meta["cmd:initscript"] = `tmux attach-session -t ${JSON.stringify(tmuxSession)} 2>/dev/null || exec tmux new-session`;
         }
         const newTabId = await WorkspaceService.CreateTab(workspaceId, null, true);
+        setActiveTab(newTabId);
         await RpcApi.CreateBlockCommand(
             TabRpcClient,
             { tabid: newTabId, blockdef: blockDef, focused: true },

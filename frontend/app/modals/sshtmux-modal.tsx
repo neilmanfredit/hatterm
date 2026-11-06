@@ -17,7 +17,11 @@ interface SshTmuxModalProps {
     onClose: () => void;
 }
 
-type Step = "conn" | "tmux";
+type Step = "conn" | "tmux" | "newtmux";
+
+function clamp(val: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, val));
+}
 
 export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
     const isLocal = mode === "localtmux";
@@ -26,11 +30,14 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
     const [step, setStep] = useState<Step>(initialStep);
     const [connList, setConnList] = useState<string[]>([]);
     const [connLoading, setConnLoading] = useState(!isLocal);
-    const [selectedConn, setSelectedConn] = useState<string>(isLocal ? null : null);
+    const [selectedConn, setSelectedConn] = useState<string>(null);
     const [tmuxSessions, setTmuxSessions] = useState<string[]>([]);
     const [tmuxLoading, setTmuxLoading] = useState(isLocal);
     const [filterText, setFilterText] = useState("");
+    const [newSessionName, setNewSessionName] = useState("");
+    const [activeIndex, setActiveIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+    const listRef = useRef<HTMLDivElement>(null);
     const workspaceId = jotai.useAtomValue(atoms.workspaceId);
 
     useEffect(() => {
@@ -50,13 +57,32 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
 
     useEffect(() => {
         setTimeout(() => inputRef.current?.focus(), 50);
+        setActiveIndex(0);
     }, [step]);
 
-    async function handleConnSelect(conn: string) {
-        if (mode === "ssh") {
-            await openNewTab(conn, null);
-            return;
-        }
+    // scroll active item into view
+    useEffect(() => {
+        const el = listRef.current?.querySelector(`[data-idx="${activeIndex}"]`) as HTMLElement;
+        el?.scrollIntoView({ block: "nearest" });
+    }, [activeIndex]);
+
+    const filteredConns = connList.filter((c) => c.toLowerCase().includes(filterText.toLowerCase()));
+    const isNewConn = filterText.trim() !== "" && !connList.includes(filterText.trim());
+
+    // conn step items: [new-conn-item-if-applicable, ...filtered existing conns]
+    const connItems: Array<{ label: string; value: string; isNew?: boolean }> = [
+        ...(isNewConn ? [{ label: `${filterText.trim()} (new connection)`, value: filterText.trim(), isNew: true }] : []),
+        ...filteredConns.map((c) => ({ label: c, value: c })),
+    ];
+
+    const filteredSessions = tmuxSessions.filter((s) => s.toLowerCase().includes(filterText.toLowerCase()));
+    // tmux step items: [New tmux session, ...existing sessions]
+    const tmuxItems: Array<{ label: string; value: string; isNew?: boolean }> = [
+        { label: "New tmux session", value: "__new__", isNew: true },
+        ...filteredSessions.map((s) => ({ label: s, value: s })),
+    ];
+
+    async function goToTmuxStep(conn: string) {
         setSelectedConn(conn);
         setStep("tmux");
         setFilterText("");
@@ -73,7 +99,24 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
         }
     }
 
-    async function openNewTab(conn: string, tmuxSession: string, newTmux = false) {
+    async function handleConnSelect(conn: string) {
+        if (mode === "ssh") {
+            await openNewTab(conn, null);
+            return;
+        }
+        await goToTmuxStep(conn);
+    }
+
+    function handleTmuxSelect(value: string) {
+        if (value === "__new__") {
+            setStep("newtmux");
+            setNewSessionName("");
+            return;
+        }
+        fireAndForget(() => openNewTab(selectedConn, value));
+    }
+
+    async function openNewTab(conn: string, tmuxSession: string, sessionName?: string) {
         onClose();
         const blockDef: BlockDef = {
             meta: {
@@ -84,7 +127,9 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
         if (conn != null) {
             blockDef.meta.connection = conn;
         }
-        if (newTmux) {
+        if (sessionName != null && sessionName.trim() !== "") {
+            blockDef.meta["cmd:initscript"] = `exec tmux new-session -s ${JSON.stringify(sessionName.trim())}`;
+        } else if (tmuxSession === "__new__" || (tmuxSession == null && sessionName != null)) {
             blockDef.meta["cmd:initscript"] = `exec tmux new-session`;
         } else if (tmuxSession != null) {
             blockDef.meta["cmd:initscript"] = `tmux attach-session -t ${JSON.stringify(tmuxSession)} 2>/dev/null || exec tmux new-session`;
@@ -98,22 +143,73 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
         );
     }
 
-    const filteredConns = connList.filter((c) => c.toLowerCase().includes(filterText.toLowerCase()));
-    const filteredSessions = tmuxSessions.filter((s) => s.toLowerCase().includes(filterText.toLowerCase()));
+    function handleKeyDown(e: React.KeyboardEvent) {
+        if (e.key === "Escape") {
+            onClose();
+            return;
+        }
+
+        if (step === "conn") {
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActiveIndex((i) => clamp(i + 1, 0, connItems.length - 1));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveIndex((i) => clamp(i - 1, 0, connItems.length - 1));
+            } else if (e.key === "Enter" && connItems.length > 0) {
+                e.preventDefault();
+                fireAndForget(() => handleConnSelect(connItems[activeIndex].value));
+            }
+        } else if (step === "tmux") {
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActiveIndex((i) => clamp(i + 1, 0, tmuxItems.length - 1));
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveIndex((i) => clamp(i - 1, 0, tmuxItems.length - 1));
+            } else if (e.key === "Enter" && !tmuxLoading) {
+                e.preventDefault();
+                handleTmuxSelect(tmuxItems[activeIndex]?.value ?? "__new__");
+            }
+        } else if (step === "newtmux") {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                fireAndForget(() => openNewTab(selectedConn, "__new__", newSessionName));
+            }
+        }
+    }
 
     const connLabel = selectedConn ?? "localhost";
     let title: string;
     if (step === "conn") {
         title = mode === "ssh" ? "New SSH Tab" : "New SSH + Tmux Tab";
-    } else {
+    } else if (step === "tmux") {
         title = `Tmux Sessions — ${connLabel}`;
+    } else {
+        title = `New Tmux Session — ${connLabel}`;
     }
-    const placeholder = step === "conn" ? "Filter connections..." : "Filter sessions...";
+
+    const placeholder =
+        step === "conn"
+            ? "Filter or enter user@host..."
+            : step === "tmux"
+              ? "Filter sessions..."
+              : "Session name (optional)";
+
     const tmuxLoadingLabel = isLocal ? "Listing local sessions..." : "Connecting and listing sessions...";
 
     return createPortal(
         <div
-            style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)", WebkitAppRegion: "no-drag" } as React.CSSProperties}
+            style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 9999,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(0,0,0,0.5)",
+                WebkitAppRegion: "no-drag",
+            } as React.CSSProperties}
             onMouseDown={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
@@ -121,9 +217,7 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
             <div
                 className="bg-zinc-900 border border-zinc-600 rounded-lg shadow-2xl w-[420px] max-h-[500px] flex flex-col overflow-hidden"
                 style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
-                onKeyDown={(e) => {
-                    if (e.key === "Escape") onClose();
-                }}
+                onKeyDown={handleKeyDown}
             >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
                     <span className="text-sm font-medium text-zinc-200">{title}</span>
@@ -140,35 +234,47 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                     <input
                         ref={inputRef}
                         type="text"
-                        value={filterText}
-                        onChange={(e) => setFilterText(e.target.value)}
+                        value={step === "newtmux" ? newSessionName : filterText}
+                        onChange={(e) => {
+                            if (step === "newtmux") {
+                                setNewSessionName(e.target.value);
+                            } else {
+                                setFilterText(e.target.value);
+                                setActiveIndex(0);
+                            }
+                        }}
                         placeholder={placeholder}
                         className="w-full bg-zinc-800 text-zinc-200 text-sm rounded px-3 py-1.5 outline-none placeholder-zinc-500 border border-zinc-700 focus:border-zinc-500"
-                        onKeyDown={(e) => {
-                            if (e.key === "Escape") onClose();
-                        }}
                     />
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
+                <div ref={listRef} className="flex-1 overflow-y-auto">
                     {step === "conn" && (
                         <>
                             {connLoading && (
                                 <div className="px-4 py-3 text-sm text-zinc-500">Loading connections...</div>
                             )}
-                            {!connLoading && filteredConns.length === 0 && (
+                            {!connLoading && connItems.length === 0 && (
                                 <div className="px-4 py-3 text-sm text-zinc-500">
-                                    {filterText ? "No matches" : "No SSH connections configured"}
+                                    No SSH connections — type user@host to connect
                                 </div>
                             )}
-                            {filteredConns.map((conn) => (
+                            {connItems.map((item, idx) => (
                                 <button
-                                    key={conn}
-                                    onClick={() => fireAndForget(() => handleConnSelect(conn))}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 cursor-pointer transition-colors text-left"
+                                    key={item.value}
+                                    data-idx={idx}
+                                    onClick={() => fireAndForget(() => handleConnSelect(item.value))}
+                                    onMouseEnter={() => setActiveIndex(idx)}
+                                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors text-left ${
+                                        idx === activeIndex
+                                            ? "bg-zinc-700 text-zinc-100"
+                                            : "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+                                    }`}
                                 >
-                                    <i className="fa fa-server text-zinc-500 w-4 text-center" />
-                                    <span className="font-mono">{conn}</span>
+                                    <i
+                                        className={`${item.isNew ? "fa fa-plus" : "fa fa-server"} text-zinc-500 w-4 text-center`}
+                                    />
+                                    <span className={item.isNew ? "" : "font-mono"}>{item.label}</span>
                                 </button>
                             ))}
                         </>
@@ -179,29 +285,27 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                             {tmuxLoading && (
                                 <div className="px-4 py-3 text-sm text-zinc-500">{tmuxLoadingLabel}</div>
                             )}
-                            {!tmuxLoading && (
-                                <>
+                            {!tmuxLoading &&
+                                tmuxItems.map((item, idx) => (
                                     <button
-                                        onClick={() => fireAndForget(() => openNewTab(selectedConn, null, true))}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 cursor-pointer transition-colors text-left border-b border-zinc-800"
+                                        key={item.value}
+                                        data-idx={idx}
+                                        onClick={() => handleTmuxSelect(item.value)}
+                                        onMouseEnter={() => setActiveIndex(idx)}
+                                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors text-left ${
+                                            idx === activeIndex
+                                                ? "bg-zinc-700 text-zinc-100"
+                                                : "text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+                                        } ${idx === 0 ? "border-b border-zinc-800" : ""}`}
                                     >
-                                        <i className="fa fa-plus text-zinc-500 w-4 text-center" />
-                                        <span>New tmux session</span>
+                                        <i
+                                            className={`${item.isNew ? "fa fa-plus" : "fa fa-terminal"} text-zinc-500 w-4 text-center`}
+                                        />
+                                        <span className={item.isNew ? "" : "font-mono"}>{item.label}</span>
                                     </button>
-                                    {filteredSessions.length === 0 && !filterText && (
-                                        <div className="px-4 py-3 text-sm text-zinc-500">No existing sessions</div>
-                                    )}
-                                    {filteredSessions.map((session) => (
-                                        <button
-                                            key={session}
-                                            onClick={() => fireAndForget(() => openNewTab(selectedConn, session))}
-                                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 cursor-pointer transition-colors text-left"
-                                        >
-                                            <i className="fa fa-terminal text-zinc-500 w-4 text-center" />
-                                            <span className="font-mono">{session}</span>
-                                        </button>
-                                    ))}
-                                </>
+                                ))}
+                            {!tmuxLoading && filteredSessions.length === 0 && !filterText && (
+                                <div className="px-4 py-3 text-sm text-zinc-500">No existing sessions</div>
                             )}
                             {!isLocal && (
                                 <button
@@ -218,6 +322,31 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
                                 </button>
                             )}
                         </>
+                    )}
+
+                    {step === "newtmux" && (
+                        <div className="px-4 py-4 flex flex-col gap-4">
+                            <p className="text-xs text-zinc-500">
+                                Leave blank for an auto-named session, or enter a name to reuse with{" "}
+                                <span className="font-mono">tmux attach</span>.
+                            </p>
+                            <button
+                                onClick={() => fireAndForget(() => openNewTab(selectedConn, "__new__", newSessionName))}
+                                className="bg-accent/80 hover:bg-accent text-primary rounded px-4 py-2 text-sm font-medium cursor-pointer transition-colors self-start"
+                            >
+                                {newSessionName.trim() ? `Create session "${newSessionName.trim()}"` : "Create session"}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setStep("tmux");
+                                    setFilterText("");
+                                }}
+                                className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 cursor-pointer transition-colors self-start"
+                            >
+                                <i className="fa fa-arrow-left" />
+                                Back
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>

@@ -173,9 +173,6 @@ const AIWelcomeMessage = memo(() => {
                     </div>
                 </div>
                 {!hasCustomModes && <BYOKAnnouncement />}
-                <div className="mt-4 text-center text-[12px] text-muted">
-                    BETA: Free to use. Daily limits keep our costs in check.
-                </div>
             </div>
         </div>
     );
@@ -188,11 +185,11 @@ const AIBuilderWelcomeMessage = memo(() => {
         <div className="text-secondary py-8">
             <div className="text-center">
                 <i className="fa fa-sparkles text-4xl text-accent mb-4 block"></i>
-                <p className="text-lg font-bold text-primary">WaveApp Builder</p>
+                <p className="text-lg font-bold text-primary">Hatterm App Builder</p>
             </div>
             <div className="mt-4 text-left max-w-md mx-auto">
                 <p className="text-sm mb-6">
-                    The WaveApp builder helps create wave widgets that integrate seamlessly into hatterm.
+                    The Hatterm app builder helps create widgets that integrate seamlessly into your workspace.
                 </p>
             </div>
         </div>

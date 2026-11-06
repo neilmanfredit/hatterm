@@ -164,34 +164,38 @@ const TermFileDrop = ({ blockId, connection, cwd, children }: TermFileDropProps)
         >
             {children}
             {(isActive || dropState.status || dropState.error) && (
-                <div
-                    className={`absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none
-                        ${isActive ? "bg-black/50 border-2 border-accent/80 border-dashed rounded" : ""}
-                        ${dropState.error ? "bg-black/70" : ""}
-                    `}
-                >
-                    {isActive && !dropState.status && (
-                        <div className="text-primary text-sm font-medium px-4 py-2 bg-black/60 rounded">
-                            Drop to copy here
-                        </div>
-                    )}
-                    {dropState.status && (
-                        <div className="text-primary text-sm font-medium px-4 py-2 bg-black/60 rounded">
-                            {dropState.status}
-                        </div>
-                    )}
-                    {dropState.error && (
-                        <div className="text-red-400 text-sm font-medium px-4 py-2 bg-black/60 rounded max-w-xs text-center">
-                            {dropState.error}
-                            <button
-                                className="pointer-events-auto block mx-auto mt-2 text-xs text-primary underline cursor-pointer"
-                                onClick={() => setDropState({ active: false, status: null, error: null })}
-                            >
-                                Dismiss
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <>
+                    {/* absorbs pointer events during drag so xterm doesn't receive them as terminal input */}
+                    {isActive && <div className="absolute inset-0 z-49" />}
+                    <div
+                        className={`absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none
+                            ${isActive ? "bg-black/50 border-2 border-accent/80 border-dashed rounded" : ""}
+                            ${dropState.error ? "bg-black/70" : ""}
+                        `}
+                    >
+                        {isActive && !dropState.status && (
+                            <div className="text-primary text-sm font-medium px-4 py-2 bg-black/60 rounded">
+                                Drop to copy here
+                            </div>
+                        )}
+                        {dropState.status && (
+                            <div className="text-primary text-sm font-medium px-4 py-2 bg-black/60 rounded">
+                                {dropState.status}
+                            </div>
+                        )}
+                        {dropState.error && (
+                            <div className="text-red-400 text-sm font-medium px-4 py-2 bg-black/60 rounded max-w-xs text-center">
+                                {dropState.error}
+                                <button
+                                    className="pointer-events-auto block mx-auto mt-2 text-xs text-primary underline cursor-pointer"
+                                    onClick={() => setDropState({ active: false, status: null, error: null })}
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </>
             )}
         </div>
     );

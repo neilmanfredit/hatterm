@@ -116,29 +116,19 @@ export class WaveAIModel {
         });
 
         this.defaultModeAtom = jotai.atom((get) => {
-            const telemetryEnabled = get(getSettingsKeyAtom("telemetry:enabled")) ?? false;
             if (this.inBuilder) {
-                return telemetryEnabled ? "waveai@balanced" : "invalid";
+                return "invalid";
             }
             const aiModeConfigs = get(this.aiModeConfigs);
-            if (!telemetryEnabled) {
-                let mode = get(getSettingsKeyAtom("waveai:defaultmode"));
-                if (mode == null || mode.startsWith("waveai@")) {
-                    return "unknown";
-                }
+            let mode = get(getSettingsKeyAtom("waveai:defaultmode"));
+            if (mode != null && aiModeConfigs != null && mode in aiModeConfigs) {
                 return mode;
             }
-            const hasPremium = get(this.hasPremiumAtom);
-            const waveFallback = hasPremium ? "waveai@balanced" : "waveai@quick";
-            let mode = get(getSettingsKeyAtom("waveai:defaultmode")) ?? waveFallback;
-            if (!hasPremium && mode.startsWith("waveai@")) {
-                mode = "waveai@quick";
+            if (aiModeConfigs != null) {
+                const firstMode = Object.keys(aiModeConfigs)[0];
+                if (firstMode) return firstMode;
             }
-            const modeExists = aiModeConfigs != null && mode in aiModeConfigs;
-            if (!modeExists) {
-                mode = waveFallback;
-            }
-            return mode;
+            return "unknown";
         });
 
         const defaultMode = globalStore.get(this.defaultModeAtom);
@@ -394,17 +384,8 @@ export class WaveAIModel {
     }
 
     isValidMode(mode: string): boolean {
-        const telemetryEnabled = globalStore.get(getSettingsKeyAtom("telemetry:enabled")) ?? false;
-        if (mode.startsWith("waveai@") && !telemetryEnabled) {
-            return false;
-        }
-
         const aiModeConfigs = globalStore.get(this.aiModeConfigs);
-        if (aiModeConfigs == null || !(mode in aiModeConfigs)) {
-            return false;
-        }
-
-        return true;
+        return aiModeConfigs != null && mode in aiModeConfigs;
     }
 
     setAIMode(mode: string) {

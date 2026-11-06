@@ -370,6 +370,12 @@ func StartRemoteShellProc(ctx context.Context, logCtx context.Context, termSize 
 	var shellOpts []string
 	var cmdCombined string
 	log.Printf("detected shell %q for conn %q\n", shellPath, conn.GetName())
+
+	err = wshclient.RemoteInstallRcFilesCommand(rpcClient, &wshrpc.RpcOpts{Route: connRoute, Timeout: 2000})
+	if err != nil {
+		conn.Infof(logCtx, "error installing rc files: %v\n", err)
+		return nil, err
+	}
 	shellOpts = append(shellOpts, cmdOpts.ShellOpts...)
 	shellType := shellutil.GetShellTypeFromShellPath(shellPath)
 	conn.Infof(logCtx, "detected shell type: %s\n", shellType)

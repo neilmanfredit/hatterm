@@ -18,6 +18,8 @@ hatterm is a fork of [Wave Terminal](https://github.com/wavetermdev/waveterm) (A
 
 Wave Terminal attribution: hatterm is built on Wave Terminal © Command Line Inc. The Wave name and brand remain the property of Command Line Inc.; hatterm makes no claim to them. See [NOTICE](NOTICE) and [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md).
 
+> **Android app** — [hatterm-app](https://github.com/neilmanfredit/hatterm-app) is the Android client that connects to a self-hosted hatterm server.
+
 ---
 
 ## Features

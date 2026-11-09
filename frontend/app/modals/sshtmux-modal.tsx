@@ -128,11 +128,11 @@ export const SshTmuxModal = memo(({ mode, onClose }: SshTmuxModalProps) => {
             blockDef.meta.connection = conn;
         }
         if (sessionName != null && sessionName.trim() !== "") {
-            blockDef.meta["cmd:initscript"] = `exec tmux new-session -s ${JSON.stringify(sessionName.trim())}`;
+            blockDef.meta["cmd:initscript"] = `tmux new-session -s ${JSON.stringify(sessionName.trim())}`;
         } else if (tmuxSession === "__new__" || (tmuxSession == null && sessionName != null)) {
-            blockDef.meta["cmd:initscript"] = `exec tmux new-session`;
+            blockDef.meta["cmd:initscript"] = `tmux new-session`;
         } else if (tmuxSession != null) {
-            blockDef.meta["cmd:initscript"] = `tmux attach-session -t ${JSON.stringify(tmuxSession)} 2>/dev/null || exec tmux new-session`;
+            blockDef.meta["cmd:initscript"] = `tmux attach-session -t ${JSON.stringify(tmuxSession)} 2>/dev/null || tmux new-session`;
         }
         const newTabId = await WorkspaceService.CreateTab(workspaceId, null, true);
         setActiveTab(newTabId);

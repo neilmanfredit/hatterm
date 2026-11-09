@@ -37,8 +37,9 @@ const (
 	WaveWshForceUpdateVarName      = "HATTERM_WSHFORCEUPDATE"
 	WaveNoConfirmQuitVarName       = "HATTERM_NOCONFIRMQUIT"
 
-	WaveJwtTokenVarName  = "HATTERM_JWT"
-	WaveSwapTokenVarName = "HATTERM_SWAPTOKEN"
+	WaveJwtTokenVarName    = "HATTERM_JWT"
+	WaveSwapTokenVarName   = "HATTERM_SWAPTOKEN"
+	WaveInitScriptVarName  = "HATTERM_INITSCRIPT"
 )
 
 const (

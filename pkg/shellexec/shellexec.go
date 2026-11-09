@@ -6,6 +6,7 @@ package shellexec
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
@@ -268,6 +269,10 @@ func StartWslShellProc(ctx context.Context, termSize waveobj.TermSize, cmdStr st
 		conn.Debugf(ctx, "packed swaptoken %s\n", packedToken)
 		cmdCombined = fmt.Sprintf(`%s=%s %s`, wavebase.WaveSwapTokenVarName, packedToken, cmdCombined)
 	}
+	if cmdOpts.SwapToken.ScriptText != "" {
+		initScriptB64 := base64.StdEncoding.EncodeToString([]byte(cmdOpts.SwapToken.ScriptText))
+		cmdCombined = fmt.Sprintf(`%s=%s %s`, wavebase.WaveInitScriptVarName, initScriptB64, cmdCombined)
+	}
 	jwtToken := cmdOpts.SwapToken.Env[wavebase.WaveJwtTokenVarName]
 	if jwtToken != "" && cmdOpts.ForceJwt {
 		conn.Debugf(ctx, "adding JWT token to environment\n")
@@ -459,6 +464,10 @@ func StartRemoteShellProc(ctx context.Context, logCtx context.Context, termSize 
 		conn.Debugf(logCtx, "packed swaptoken %s\n", packedToken)
 		cmdCombined = fmt.Sprintf(`%s=%s %s`, wavebase.WaveSwapTokenVarName, packedToken, cmdCombined)
 	}
+	if cmdOpts.SwapToken.ScriptText != "" {
+		initScriptB64 := base64.StdEncoding.EncodeToString([]byte(cmdOpts.SwapToken.ScriptText))
+		cmdCombined = fmt.Sprintf(`%s=%s %s`, wavebase.WaveInitScriptVarName, initScriptB64, cmdCombined)
+	}
 	jwtToken := cmdOpts.SwapToken.Env[wavebase.WaveJwtTokenVarName]
 	if jwtToken != "" && cmdOpts.ForceJwt {
 		conn.Debugf(logCtx, "adding JWT token to environment\n")
@@ -642,6 +651,10 @@ func StartLocalShellProc(logCtx context.Context, termSize waveobj.TermSize, cmdS
 	} else {
 		blocklogger.Debugf(logCtx, "packed swaptoken %s\n", packedToken)
 		shellutil.UpdateCmdEnv(ecmd, map[string]string{wavebase.WaveSwapTokenVarName: packedToken})
+	}
+	if cmdOpts.SwapToken.ScriptText != "" {
+		initScriptB64 := base64.StdEncoding.EncodeToString([]byte(cmdOpts.SwapToken.ScriptText))
+		shellutil.UpdateCmdEnv(ecmd, map[string]string{wavebase.WaveInitScriptVarName: initScriptB64})
 	}
 	jwtToken := cmdOpts.SwapToken.Env[wavebase.WaveJwtTokenVarName]
 	if jwtToken != "" && cmdOpts.ForceJwt {

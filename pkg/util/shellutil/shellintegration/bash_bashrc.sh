@@ -9,9 +9,21 @@ WAVETERM_WSHBINDIR={{.WSHBINDIR}}
 # after /etc/profile which is likely to clobber the path
 export PATH="$WAVETERM_WSHBINDIR:$PATH"
 
-# Source the dynamic script from wsh token
-eval "$(wsh token "$HATTERM_SWAPTOKEN" bash 2> /dev/null)"
+# Source the dynamic script from wsh token; fall back to HATTERM_INITSCRIPT if the
+# token exchange fails (e.g. domain socket not yet reachable on the remote host).
+_hatterm_wsh_out=$(wsh token "$HATTERM_SWAPTOKEN" bash 2>/dev/null)
 unset HATTERM_SWAPTOKEN
+if [ -n "$_hatterm_wsh_out" ]; then
+    unset HATTERM_INITSCRIPT
+    eval "$_hatterm_wsh_out"
+fi
+unset _hatterm_wsh_out
+if [ -n "$HATTERM_INITSCRIPT" ]; then
+    _hatterm_init="$HATTERM_INITSCRIPT"
+    unset HATTERM_INITSCRIPT
+    eval "$(printf '%s' "$_hatterm_init" | base64 -d 2>/dev/null)"
+    unset _hatterm_init
+fi
 
 # Source the first of ~/.bash_profile, ~/.bash_login, or ~/.profile that exists
 if [ -f ~/.bash_profile ]; then

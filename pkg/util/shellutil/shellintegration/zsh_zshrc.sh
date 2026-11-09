@@ -1,8 +1,19 @@
 # add wsh to path, source dynamic script from wsh token
 WAVETERM_WSHBINDIR={{.WSHBINDIR}}
 export PATH="$WAVETERM_WSHBINDIR:$PATH"
-source <(wsh token "$HATTERM_SWAPTOKEN" zsh 2>/dev/null)
+_hatterm_wsh_out=$(wsh token "$HATTERM_SWAPTOKEN" zsh 2>/dev/null)
 unset HATTERM_SWAPTOKEN
+if [[ -n "$_hatterm_wsh_out" ]]; then
+    unset HATTERM_INITSCRIPT
+    source <(printf '%s' "$_hatterm_wsh_out")
+fi
+unset _hatterm_wsh_out
+if [[ -n "$HATTERM_INITSCRIPT" ]]; then
+    _hatterm_init="$HATTERM_INITSCRIPT"
+    unset HATTERM_INITSCRIPT
+    eval "$(printf '%s' "$_hatterm_init" | base64 -d 2>/dev/null)"
+    unset _hatterm_init
+fi
 
 # Source the original zshrc only if ZDOTDIR has not been changed
 if [ "$ZDOTDIR" = "$WAVETERM_ZDOTDIR" ]; then

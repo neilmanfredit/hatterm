@@ -2,9 +2,20 @@
 # Add Wave binary directory to PATH
 set -x PATH {{.WSHBINDIR}} $PATH
 
-# Source dynamic script from wsh token (the echo is to prevent fish from complaining about empty input)
-wsh token "$HATTERM_SWAPTOKEN" fish 2>/dev/null | source
+# Source dynamic script from wsh token; fall back to HATTERM_INITSCRIPT if token exchange fails.
+set _hatterm_wsh_out (wsh token "$HATTERM_SWAPTOKEN" fish 2>/dev/null)
 set -e HATTERM_SWAPTOKEN
+if test -n "$_hatterm_wsh_out"
+    set -e HATTERM_INITSCRIPT
+    printf '%s\n' $_hatterm_wsh_out | source
+end
+set -e _hatterm_wsh_out
+if set -q HATTERM_INITSCRIPT
+    set _hatterm_init $HATTERM_INITSCRIPT
+    set -e HATTERM_INITSCRIPT
+    eval (printf '%s' $_hatterm_init | base64 -d 2>/dev/null)
+    set -e _hatterm_init
+end
 
 # Load Wave completions
 wsh completion fish | source

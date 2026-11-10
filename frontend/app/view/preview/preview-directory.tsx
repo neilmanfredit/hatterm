@@ -713,8 +713,16 @@ function DirectoryPreview({ model }: DirectoryPreviewProps) {
 
     const handleDropCopy = useCallback(
         async (data: CommandFileCopyData, isDir: boolean) => {
+            const srcConn = (data.srcuri.match(/^wsh:\/\/([^/]+)/) ?? [])[1] ?? "local";
+            const destConn = (data.desturi.match(/^wsh:\/\/([^/]+)/) ?? [])[1] ?? "local";
+            const norm = (c: string) => (!c || c === "" ? "local" : c);
+            const crossHost = norm(srcConn) !== norm(destConn);
             try {
-                await env.rpc.FileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout });
+                if (crossHost) {
+                    await env.rpc.RemoteFileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout });
+                } else {
+                    await env.rpc.FileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout });
+                }
             } catch (e) {
                 console.warn("Copy failed:", e);
                 const copyError = `${e}`;

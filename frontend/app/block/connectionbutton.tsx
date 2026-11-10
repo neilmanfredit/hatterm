@@ -147,7 +147,7 @@ export const ConnectionButton = React.memo(
                             decl={{
                                 elemtype: "iconbutton",
                                 icon: "link-slash",
-                                title: "wsh is not installed for this connection",
+                                title: "Remote integration (wsh) not installed for this connection",
                             }}
                         />
                     )}

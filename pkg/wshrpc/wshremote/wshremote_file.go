@@ -95,7 +95,7 @@ func remoteCopyFileInternal(srcUri, destUri string, srcPathCleaned, destPathClea
 	}
 	defer srcFile.Close()
 
-	destFile, err := os.OpenFile(destFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcFileStat.Mode())
+	destFile, err := os.OpenFile(destFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcFileStat.Mode()&0666)
 	if err != nil {
 		return fmt.Errorf("cannot create file %q: %w", destFilePath, err)
 	}
@@ -110,6 +110,12 @@ func remoteCopyFileInternal(srcUri, destUri string, srcPathCleaned, destPathClea
 // RemoteFileCopyCommand copies a file FROM somewhere TO here
 func (impl *ServerImpl) RemoteFileCopyCommand(ctx context.Context, data wshrpc.CommandFileCopyData) (bool, error) {
 	log.Printf("RemoteFileCopyCommand: src=%s, dest=%s\n", data.SrcUri, data.DestUri)
+	if data.SrcUri == "" {
+		return false, fmt.Errorf("source URI must not be empty")
+	}
+	if data.DestUri == "" {
+		return false, fmt.Errorf("destination URI must not be empty")
+	}
 	opts := data.Opts
 	if opts == nil {
 		opts = &wshrpc.FileCopyOpts{}
@@ -162,7 +168,7 @@ func (impl *ServerImpl) RemoteFileCopyCommand(ctx context.Context, data wshrpc.C
 		return false, err
 	}
 
-	destFile, err := os.OpenFile(destFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcFileInfo.Mode)
+	destFile, err := os.OpenFile(destFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcFileInfo.Mode&0666)
 	if err != nil {
 		return false, fmt.Errorf("cannot create destination file %q: %w", destFilePath, err)
 	}

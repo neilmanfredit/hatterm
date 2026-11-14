@@ -3,7 +3,8 @@
 
 import { RpcApi } from "@/app/store/wshclientapi";
 import { TabRpcClient } from "@/app/store/wshrpcutil";
-import { formatRemoteUri } from "@/util/waveutil";
+import { overwriteError as OverwriteRequiredMsg } from "@/app/view/preview/preview-directory-utils";
+import { formatRemoteUri, getUriConnection, makeConnRoute, normConn } from "@/util/waveutil";
 import * as React from "react";
 import { useDrop } from "react-dnd";
 
@@ -20,15 +21,8 @@ interface TermFileDropState {
     error: string | null;
 }
 
-function getUriConnection(uri: string): string {
-    const m = uri.match(/^wsh:\/\/([^/]+)/);
-    return m?.[1] ?? "local";
-}
-
 function isCrossHost(srcUri: string, destConn: string): boolean {
-    const srcConn = getUriConnection(srcUri);
-    const norm = (c: string) => (!c || c === "" ? "local" : c);
-    return norm(srcConn) !== norm(destConn);
+    return normConn(getUriConnection(srcUri)) !== normConn(destConn);
 }
 
 const TIMEOUT = 31536000000;
@@ -36,7 +30,8 @@ const TIMEOUT = 31536000000;
 async function doCopy(srcUri: string, destUri: string, overwrite: boolean, crossHost: boolean): Promise<void> {
     const opts = { timeout: TIMEOUT, overwrite };
     if (crossHost) {
-        await RpcApi.RemoteFileCopyCommand(TabRpcClient, { srcuri: srcUri, desturi: destUri, opts }, { timeout: TIMEOUT });
+        const route = makeConnRoute(destUri);
+        await RpcApi.RemoteFileCopyCommand(TabRpcClient, { srcuri: srcUri, desturi: destUri, opts }, { timeout: TIMEOUT, route });
     } else {
         await RpcApi.FileCopyCommand(TabRpcClient, { srcuri: srcUri, desturi: destUri, opts }, { timeout: TIMEOUT });
     }
@@ -59,7 +54,7 @@ async function copyFilesToTerminal(
             await doCopy(srcUri, destUri, false, crossHost);
         } catch (e) {
             const msg = `${e}`;
-            if (msg.includes("exists") || msg.includes("overwrite")) {
+            if (msg.includes(OverwriteRequiredMsg)) {
                 try {
                     await doCopy(srcUri, destUri, true, crossHost);
                 } catch (e2) {

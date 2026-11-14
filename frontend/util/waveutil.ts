@@ -1,4 +1,4 @@
-// Copyright 2025, Command Line Inc.
+// Copyright 2026, Command Line Inc.
 // SPDX-License-Identifier: Apache-2.0s
 
 import { getWebServerEndpoint } from "@/util/endpoints";
@@ -92,4 +92,17 @@ export function computeBgStyleFromMeta(meta: Omit<BackgroundConfigType, "display
 export function formatRemoteUri(path: string, connection: string): string {
     connection = connection ?? "local";
     return `wsh://${connection}/${path}`;
+}
+
+export function getUriConnection(uri: string): string {
+    const m = uri.match(/^wsh:\/\/([^/]+)/);
+    return m?.[1] ?? "local";
+}
+
+export function normConn(c: string): string {
+    return !c || c === "" ? "local" : c;
+}
+
+export function makeConnRoute(uri: string): string {
+    return "conn:" + normConn(getUriConnection(uri));
 }

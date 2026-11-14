@@ -9,7 +9,7 @@ import { checkKeyPressed, isCharacterKeyEvent } from "@/util/keyutil";
 import { PLATFORM, PlatformMacOS } from "@/util/platformutil";
 import { addOpenMenuItems } from "@/util/previewutil";
 import { fireAndForget } from "@/util/util";
-import { formatRemoteUri } from "@/util/waveutil";
+import { formatRemoteUri, getUriConnection, makeConnRoute, normConn } from "@/util/waveutil";
 import { offset, useDismiss, useFloating, useInteractions } from "@floating-ui/react";
 import {
     Header,
@@ -713,13 +713,11 @@ function DirectoryPreview({ model }: DirectoryPreviewProps) {
 
     const handleDropCopy = useCallback(
         async (data: CommandFileCopyData, isDir: boolean) => {
-            const srcConn = (data.srcuri.match(/^wsh:\/\/([^/]+)/) ?? [])[1] ?? "local";
-            const destConn = (data.desturi.match(/^wsh:\/\/([^/]+)/) ?? [])[1] ?? "local";
-            const norm = (c: string) => (!c || c === "" ? "local" : c);
-            const crossHost = norm(srcConn) !== norm(destConn);
+            const crossHost = normConn(getUriConnection(data.srcuri)) !== normConn(getUriConnection(data.desturi));
             try {
                 if (crossHost) {
-                    await env.rpc.RemoteFileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout });
+                    const route = makeConnRoute(data.desturi);
+                    await env.rpc.RemoteFileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout, route });
                 } else {
                     await env.rpc.FileCopyCommand(TabRpcClient, data, { timeout: data.opts.timeout });
                 }

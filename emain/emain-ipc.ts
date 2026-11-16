@@ -194,7 +194,7 @@ function saveImageFileWithNativeDialog(
 
 export function initIpcHandlers() {
     electron.ipcMain.on("open-external", (event, url) => {
-        if (url && typeof url === "string") {
+        if (url && typeof url === "string" && (url.startsWith("https://") || url.startsWith("http://"))) {
             fireAndForget(() =>
                 callWithOriginalXdgCurrentDesktopAsync(() =>
                     electron.shell.openExternal(url).catch((err) => {
@@ -203,7 +203,7 @@ export function initIpcHandlers() {
                 )
             );
         } else {
-            console.error("Invalid URL received in open-external event:", url);
+            console.error("open-external: rejected non-http(s) or invalid URL:", url);
         }
     });
 

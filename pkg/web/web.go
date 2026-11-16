@@ -470,16 +470,30 @@ func RunWebServer(listener net.Listener) {
 
 	handler := http.Handler(gr)
 	if wavebase.IsDevMode() {
+		devOrigins := []string{
+			"http://localhost:5173",
+			"http://localhost:5174",
+			"http://localhost:6173",
+			"http://127.0.0.1:5173",
+			"http://127.0.0.1:5174",
+		}
 		originalHandler := handler
 		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			origin := r.Header.Get("Origin")
-			if origin != "" {
-				w.Header().Set("Access-Control-Allow-Origin", origin)
+			allowed := false
+			for _, o := range devOrigins {
+				if origin == o {
+					allowed = true
+					break
+				}
 			}
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-Session-Id, X-AuthKey, Authorization, X-Requested-With, Accept, x-vercel-ai-ui-message-stream")
-			w.Header().Set("Access-Control-Expose-Headers", "X-ZoneFileInfo, Content-Length, Content-Type, x-vercel-ai-ui-message-stream")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			if allowed {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-Session-Id, X-AuthKey, Authorization, X-Requested-With, Accept, x-vercel-ai-ui-message-stream")
+				w.Header().Set("Access-Control-Expose-Headers", "X-ZoneFileInfo, Content-Length, Content-Type, x-vercel-ai-ui-message-stream")
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+			}
 
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(204)

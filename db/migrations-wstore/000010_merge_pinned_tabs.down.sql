@@ -1,2 +1,1 @@
--- This migration cannot be reversed as pinned tab state is lost
--- during the merge operation
+SELECT RAISE(ABORT, 'irreversible: pinned tab state cannot be restored after merge');

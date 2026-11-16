@@ -1,1 +1,1 @@
--- we don't need to remove parentoref
+SELECT RAISE(ABORT, 'irreversible: parentoref data cannot be safely removed');
